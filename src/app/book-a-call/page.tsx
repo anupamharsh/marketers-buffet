@@ -32,7 +32,7 @@ export default function BookACallPage() {
                   <span className="t-num block text-5xl">30</span>
                   <span className="mt-1 block font-semibold text-ink">minutes free</span>
                 </div>
-                <IconArrow size={22} className="shrink-0 text-basil" />
+                <IconArrow size={22} className="shrink-0 text-accent" />
                 <div className="flex-1 rounded-2xl bg-paper p-5 ring-1 ring-line">
                   <span className="t-num block text-5xl">₹99</span>
                   <span className="mt-1 block font-semibold text-ink">per hour after</span>

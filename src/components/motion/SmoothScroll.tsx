@@ -17,12 +17,16 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     // Tell the inline safety net in <head> that JS is alive, so hidden-until-animated content stays managed by GSAP.
     (window as unknown as { __mbReady?: boolean }).__mbReady = true;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const l = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, autoRaf: false, anchors: { offset: -96 } });
+    // lerp 0.1: responsive but silky. Touch keeps native scrolling (smoothest on phones).
+    const l = new Lenis({ lerp: 0.1, wheelMultiplier: 1, autoRaf: false, anchors: { offset: -96 } });
     l.on("scroll", ScrollTrigger.update);
+    // Lenis and every GSAP tween share one rAF loop, so scroll position and animation never drift apart.
     const tick = (time: number) => l.raf(time * 1000);
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
     setLenis(l);
+    // Web fonts swapping in shift the layout; re-measure pins once they're ready so nothing jumps.
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
     return () => {
       gsap.ticker.remove(tick);
       l.destroy();

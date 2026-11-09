@@ -12,8 +12,17 @@ export function AppIcon({ letter, tint = "peach", size = 38 }: { letter: string;
   return (
     <span
       aria-hidden
-      className={`grid shrink-0 place-items-center font-bold text-ink ${tint === "peach" ? "bg-peach" : "bg-mint"}`}
-      style={{ width: size, height: size, borderRadius: size * 0.26, fontSize: size * 0.42, letterSpacing: "-0.03em" }}
+      className="grid shrink-0 place-items-center font-bold"
+      // App icons look like real app icons in both themes: fixed light tint, dark letter.
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.26,
+        fontSize: size * 0.42,
+        letterSpacing: "-0.03em",
+        background: tint === "peach" ? "#FDE6DC" : "#D6F2E6",
+        color: "#141414",
+      }}
     >
       {letter}
     </span>
@@ -58,7 +67,7 @@ export function SearchBar({ query, caret = true, className = "" }: { query: Reac
       <IconSearch size={18} className="shrink-0 text-slate" />
       <span className="truncate text-[0.98rem] font-medium tracking-[-0.01em] text-ink">
         {query}
-        {caret ? <span className="caret text-basil" /> : null}
+        {caret ? <span className="caret text-accent" /> : null}
       </span>
     </div>
   );
@@ -110,10 +119,10 @@ export function StatProp({ value, text, className = "" }: { value: string; text:
 export function PhoneFrame({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`relative aspect-[9/19] w-[220px] rounded-[38px] bg-ink p-[7px] shadow-[var(--shadow-lift)] ${className}`}
+      className={`relative aspect-[9/19] w-[220px] rounded-[38px] bg-[#111111] p-[7px] shadow-[var(--shadow-lift)] dark:ring-1 dark:ring-[#3a3a3a] ${className}`}
     >
       <div className="relative h-full w-full overflow-hidden rounded-[31px] bg-paper">
-        <span className="absolute left-1/2 top-2 z-10 h-[18px] w-[74px] -translate-x-1/2 rounded-full bg-ink" aria-hidden />
+        <span className="absolute left-1/2 top-2 z-10 h-[18px] w-[74px] -translate-x-1/2 rounded-full bg-[#111111]" aria-hidden />
         {children}
       </div>
     </div>
@@ -138,7 +147,7 @@ export function CalendarSlot({ className = "" }: { className?: string }) {
       </div>
       <div className="grid grid-cols-5 gap-1.5 text-center">
         {days.map((d, i) => (
-          <span key={d} className={`rounded-lg py-1.5 text-xs font-medium ${i === 2 ? "bg-ink text-cream" : "text-slate"}`}>
+          <span key={d} className={`rounded-lg py-1.5 text-xs font-medium ${i === 2 ? "bg-ink text-paper" : "text-slate"}`}>
             {d}
           </span>
         ))}

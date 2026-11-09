@@ -9,6 +9,7 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { IconSearch, IconMenu } from "@/components/ui/Icons";
 import { openSearch, SearchOverlay, type SearchItem } from "./SearchOverlay";
 import { MobileMenu } from "./MobileMenu";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
   const pathname = usePathname();
@@ -24,14 +25,21 @@ export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
 
   useEffect(() => {
     let raf = 0;
+    // Mirror state in refs so React re-renders only when a value really flips,
+    // not on every scroll frame.
+    let isScrolled = false;
+    let isHidden = false;
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const y = window.scrollY;
-        setScrolled(y > 24);
-        setHidden(y > 420 && y > last.current + 2);
-        if (y < last.current - 2 || y < 420) setHidden(false);
+        const nextScrolled = y > 24;
+        let nextHidden = isHidden;
+        if (y > 420 && y > last.current + 2) nextHidden = true;
+        else if (y < last.current - 2 || y < 420) nextHidden = false;
         last.current = y;
+        if (nextScrolled !== isScrolled) setScrolled((isScrolled = nextScrolled));
+        if (nextHidden !== isHidden) setHidden((isHidden = nextHidden));
       });
     };
     onScroll();
@@ -49,11 +57,11 @@ export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[100] transition-[transform,background-color,border-color] duration-500 ease-[var(--ease-out-soft)] ${
+        className={`gpu fixed inset-x-0 top-0 z-[100] transition-[transform,background-color,border-color] duration-500 ease-[var(--ease-out-soft)] ${
           hidden && !menu ? "-translate-y-full" : "translate-y-0"
         } ${scrolled && !menu ? "border-b border-line bg-paper/95" : "border-b border-transparent bg-transparent"}`}
       >
-        <div className="shell flex h-[72px] items-center justify-between gap-6 md:h-[84px]">
+        <div className="shell flex h-[72px] items-center justify-between gap-3 md:h-[84px] md:gap-6">
           <Link href="/" aria-label="Marketers Buffet, home" className="relative z-[2] -m-2 rounded-xl p-2 text-[1.2rem] md:text-[1.3rem]">
             <Logo />
           </Link>
@@ -76,7 +84,7 @@ export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
             </ul>
           </nav>
 
-          <div className="relative z-[2] flex items-center gap-2">
+          <div className="relative z-[2] flex items-center gap-1 sm:gap-2">
             <button
               onClick={openSearch}
               className="group flex h-11 items-center gap-2 rounded-full px-3 text-ink transition-colors hover:bg-ink/5"
@@ -87,6 +95,7 @@ export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
                 {mod} K
               </kbd>
             </button>
+            <ThemeToggle />
             <span className="hidden sm:inline-flex">
               <Magnetic>
                 <Link href="/book-a-call" className="btn btn-primary btn-sm">

@@ -34,7 +34,7 @@ export function PostBody({ blocks }: { blocks: Block[] }) {
           case "callout":
             return (
               <aside key={i} className="relative !my-10 overflow-hidden rounded-[20px] bg-mint/70 p-6 md:p-7" aria-label={b.title ?? "Note"}>
-                {b.title ? <p className="mb-1.5 font-semibold tracking-[-0.015em] text-basil">{b.title}</p> : null}
+                {b.title ? <p className="mb-1.5 font-semibold tracking-[-0.015em] text-accent">{b.title}</p> : null}
                 <p className="text-ink">{rich(b.text)}</p>
               </aside>
             );

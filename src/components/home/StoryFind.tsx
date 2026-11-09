@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { Scribble } from "@/components/motion/Scribble";
 import { FileBadge } from "@/components/ui/Props";
 import { IconClock, IconDownload } from "@/components/ui/Icons";
@@ -30,7 +30,7 @@ export function StoryFind() {
 
         const tl = gsap.timeline({
           defaults: { ease: "power2.inOut" },
-          scrollTrigger: { trigger: q("[data-pin]")[0], start: "top top", end: "+=320%", scrub: 0.8, pin: true, anticipatePin: 1 },
+          scrollTrigger: { trigger: q("[data-pin]")[0], start: "top top", end: "+=320%", scrub: SCRUB, pin: true, anticipatePin: 1, fastScrollEnd: true },
         });
         tl.to(strikes[0], { strokeDashoffset: 0, duration: 1 })
           .to(strikes[1], { strokeDashoffset: 0, duration: 1 }, "+=0.15")
@@ -70,7 +70,7 @@ export function StoryFind() {
           </p>
 
           {/* Scene A */}
-          <div data-a className="lg:absolute lg:inset-x-[clamp(1.25rem,5vw,5rem)] lg:top-1/2 lg:-translate-y-1/2">
+          <div data-a className="lg:gpu lg:absolute lg:inset-x-[clamp(1.25rem,5vw,5rem)] lg:top-1/2 lg:-translate-y-1/2">
             <h2 id="find-title" className="t-h1 max-w-[16ch] text-ink">
               Most marketing advice is either{" "}
               <Scribble kind="strike" tone="basil" manual>
@@ -84,7 +84,7 @@ export function StoryFind() {
           </div>
 
           {/* Scene B */}
-          <div data-b className="lg:absolute lg:inset-x-[clamp(1.25rem,5vw,5rem)] lg:top-1/2 lg:-translate-y-1/2">
+          <div data-b className="lg:gpu lg:absolute lg:inset-x-[clamp(1.25rem,5vw,5rem)] lg:top-1/2 lg:-translate-y-1/2">
             <p className="t-display text-ink">
               This is{" "}
               <Scribble kind="circle" tone="basil" manual className="ml-[0.12em]">
@@ -140,7 +140,7 @@ export function StoryFind() {
 
 function FindCard({ title, serif, pill, children }: { title: string; serif: string; pill: string; children: React.ReactNode }) {
   return (
-    <div data-card className="card flex min-h-[250px] flex-col justify-between gap-8 p-6 lg:min-h-[270px] lg:p-7">
+    <div data-card className="gpu card flex min-h-[250px] flex-col justify-between gap-8 p-6 lg:min-h-[270px] lg:p-7">
       <div>
         <span className="pill pill-plain mb-5">{pill}</span>
         <p className="text-[1.75rem] font-bold leading-[1.02] tracking-[-0.04em] text-ink">

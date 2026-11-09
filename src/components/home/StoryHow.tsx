@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { rich } from "@/lib/text";
 import { Glows } from "@/components/ui/Art";
 import { CalendarSlot, FileBadge, Notification, PhoneFrame } from "@/components/ui/Props";
@@ -41,8 +41,9 @@ export function StoryHow() {
             start: "top top",
             end: () => `+=${distance()}`,
             pin: true,
-            scrub: 0.8,
+            scrub: SCRUB,
             anticipatePin: 1,
+            fastScrollEnd: true,
             invalidateOnRefresh: true,
           },
         });
@@ -50,7 +51,7 @@ export function StoryHow() {
 
         const panelTl = (sel: string) => {
           const panel = q(sel)[0];
-          return gsap.timeline({ scrollTrigger: { trigger: panel, containerAnimation: h, start: "left 75%", end: "center 55%", scrub: 0.6 } });
+          return gsap.timeline({ scrollTrigger: { trigger: panel, containerAnimation: h, start: "left 75%", end: "center 55%", scrub: SCRUB } });
         };
 
         // 01 timer ring
@@ -89,7 +90,7 @@ export function StoryHow() {
       <div data-pin className="relative lg:h-[100svh] lg:overflow-hidden">
         <div
           data-track
-          className="flex flex-col gap-5 px-[clamp(1.25rem,5vw,5rem)] py-24 lg:h-full lg:w-max lg:flex-row lg:items-center lg:gap-7 lg:py-0 lg:pr-[12vw]"
+          className="lg:gpu flex flex-col gap-5 px-[clamp(1.25rem,5vw,5rem)] py-24 lg:h-full lg:w-max lg:flex-row lg:items-center lg:gap-7 lg:py-0 lg:pr-[12vw]"
         >
           <div className="lg:w-[34vw] lg:min-w-[420px] lg:pr-10">
             <span className="pill pill-series">How to use this site</span>
@@ -140,8 +141,8 @@ function TimerProp() {
   return (
     <div className="relative grid h-[220px] w-[220px] place-items-center">
       <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
-        <circle cx="100" cy="100" r="88" fill="#fff" stroke="#ECEAE5" strokeWidth="6" />
-        <circle data-ring cx="100" cy="100" r="88" fill="none" stroke="#1E4D3E" strokeWidth="6" strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset="0" />
+        <circle cx="100" cy="100" r="88" strokeWidth="6" style={{ fill: "var(--color-white)", stroke: "var(--color-line)" }} />
+        <circle data-ring cx="100" cy="100" r="88" fill="none" style={{ stroke: "var(--color-accent)" }} strokeWidth="6" strokeLinecap="round" pathLength={1} strokeDasharray="1" strokeDashoffset="0" />
       </svg>
       <div className="relative text-center">
         <span className="t-num block text-7xl">2:00</span>
@@ -169,11 +170,11 @@ function PhoneProp() {
               <span className="relative inline-block">
                 Long weekend in 3 days.
                 <svg className="pointer-events-none absolute -inset-x-2 -inset-y-2 h-[calc(100%+16px)] w-[calc(100%+16px)]" viewBox="0 0 200 80" preserveAspectRatio="none" overflow="visible">
-                  <path data-scribble d="M118 9C70 5 18 15 9 38c-8 22 40 36 96 36 54 0 90-14 88-36C190 14 134 2 70 10" fill="none" stroke="#1E4D3E" strokeWidth="2" vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="1" strokeDashoffset="0" strokeLinecap="round" />
+                  <path data-scribble d="M118 9C70 5 18 15 9 38c-8 22 40 36 96 36 54 0 90-14 88-36C190 14 134 2 70 10" fill="none" style={{ stroke: "var(--color-accent)" }} strokeWidth="2" vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="1" strokeDashoffset="0" strokeLinecap="round" />
                 </svg>
               </span>
             </p>
-            <span className="mt-3 rounded-lg bg-ink py-2 text-center text-[0.7rem] font-semibold text-cream">Book now</span>
+            <span className="mt-3 rounded-lg bg-ink py-2 text-center text-[0.7rem] font-semibold text-paper">Book now</span>
           </div>
         </PhoneFrame>
       </div>
@@ -202,7 +203,7 @@ function DownloadProp() {
       </div>
       <div className="mt-4 flex items-center justify-between text-sm font-medium text-slate">
         <span>hooks-you-can-use.pdf</span>
-        <span data-done className="flex items-center gap-1.5 font-semibold text-basil">
+        <span data-done className="flex items-center gap-1.5 font-semibold text-accent">
           <IconCheck size={16} /> Done
         </span>
       </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { Cloche } from "@/components/brand/Cloche";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { FileBadge, Notification, SearchBar } from "@/components/ui/Props";
@@ -89,18 +89,29 @@ export function Hero() {
             .to(hl, { "--hl": 1, duration: 0.8, ease: "power2.inOut" }, head + 0.75)
             .from(q("[data-hero-fade]"), { autoAlpha: 0, y: 22, duration: 1, stagger: 0.08, ease: "power3.out" }, head + 0.55);
 
-          // Idle float, once everything has landed.
+          // Idle float. Created up front (so cleanup reverts them), started once
+          // everything has landed, and paused whenever the hero is off screen.
+          const floats = [
+            ...props.map((p, i) =>
+              gsap.to(p.querySelector("[data-float]"), { y: i % 2 ? 9 : -9, duration: 2.6 + i * 0.35, ease: "sine.inOut", yoyo: true, repeat: -1, paused: true }),
+            ),
+            gsap.to(q("[data-lid-float]"), { y: -8, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1, paused: true }),
+          ];
+          let landed = false;
+          let visible = true;
+          const syncFloats = () => floats.forEach((f) => (landed && visible ? f.play() : f.pause()));
           tl.add(() => {
-            props.forEach((p, i) => {
-              gsap.to(p.querySelector("[data-float]"), {
-                y: i % 2 ? 9 : -9,
-                duration: 2.6 + i * 0.35,
-                ease: "sine.inOut",
-                yoyo: true,
-                repeat: -1,
-              });
-            });
-            gsap.to(q("[data-lid-float]"), { y: -8, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
+            landed = true;
+            syncFloats();
+          });
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top bottom",
+            end: "bottom top",
+            onToggle: (self) => {
+              visible = self.isActive;
+              syncFloats();
+            },
           });
 
           // Scroll: props drift away at different depths, lid settles back down.
@@ -108,17 +119,17 @@ export function Hero() {
             gsap.to(p.querySelector("[data-drift]"), {
               y: -Number(p.dataset.depth || 1) * (desktop ? 140 : 70),
               ease: "none",
-              scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: 0.6 },
+              scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: SCRUB },
             });
           });
           gsap.to(q("[data-cloche-scroll]"), {
             y: desktop ? 80 : 30,
             scale: 0.94,
             ease: "none",
-            scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: 0.6 },
+            scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: SCRUB },
           });
 
-          // Pointer parallax.
+          // Pointer parallax (only while the hero is on screen).
           if (desktop) {
             const movers = props.map((p) => ({
               x: gsap.quickTo(p.querySelector("[data-par]"), "x", { duration: 1, ease: "power3.out" }),
@@ -126,6 +137,7 @@ export function Hero() {
               d: Number(p.dataset.depth || 1),
             }));
             const onMove = (e: PointerEvent) => {
+              if (!visible) return;
               const nx = e.clientX / window.innerWidth - 0.5;
               const ny = e.clientY / window.innerHeight - 0.5;
               movers.forEach((m) => {
@@ -147,8 +159,11 @@ export function Hero() {
     <section ref={root} className="relative isolate overflow-hidden" aria-labelledby="hero-title">
       {/* Buffet Light: both glows, soft, never meeting in the middle, never behind the headline */}
       <div className="tex-dots mask-fade-b pointer-events-none absolute inset-0 -z-10" />
-      <span className="glow glow-mint -z-10" style={{ width: "min(1100px,120vw)", left: "-38%", bottom: "-55%" }} />
-      <span className="glow glow-lavender -z-10" style={{ width: "min(1000px,110vw)", right: "-30%", top: "-45%" }} />
+      {/* Faded out at the bottom so the glow never ends in a hard line at the section edge. */}
+      <div className="mask-fade-b pointer-events-none absolute inset-0 -z-10">
+        <span className="glow glow-mint" style={{ width: "min(1100px,120vw)", left: "-38%", bottom: "-55%" }} />
+        <span className="glow glow-lavender" style={{ width: "min(1000px,110vw)", right: "-30%", top: "-45%" }} />
+      </div>
 
       <div className="shell grid min-h-[100svh] items-center gap-10 pb-16 pt-28 md:pt-32 lg:grid-cols-12 lg:gap-6 lg:pb-20">
         <div className="relative z-10 lg:col-span-7">
@@ -197,9 +212,9 @@ export function Hero() {
 
         {/* Stage */}
         <div data-stage className="relative mx-auto aspect-[1/0.95] w-full max-w-[560px] lg:col-span-5 lg:max-w-none" aria-hidden>
-          <div data-cloche-scroll className="absolute inset-x-[16%] bottom-[4%] top-[34%]">
+          <div data-cloche-scroll className="gpu absolute inset-x-[16%] bottom-[4%] top-[34%]">
             <div data-cloche-wrap className="h-full w-full">
-              <div data-lid-float className="h-full w-full">
+              <div data-lid-float className="gpu h-full w-full">
                 <Cloche dots className="hero-cloche h-full w-full overflow-visible" />
               </div>
             </div>
@@ -258,9 +273,12 @@ function HeroProp({
     // Each layer owns one kind of motion so tweens never fight over the same transform:
     // prop = intro burst, drift = scroll, par = pointer parallax, float = idle bob.
     <div data-prop data-reveal data-rot={rot} data-depth={depth} className={`absolute ${className}`}>
-      <div data-drift>
-        <div data-par>
-          <div data-float>{children}</div>
+      {/* Each moving layer is its own GPU layer, so shadows are painted once and only composited after that. */}
+      <div data-drift className="gpu">
+        <div data-par className="gpu">
+          <div data-float className="gpu">
+            {children}
+          </div>
         </div>
       </div>
     </div>

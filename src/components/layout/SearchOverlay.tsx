@@ -88,7 +88,7 @@ export function SearchOverlay({ index }: { index: SearchItem[] }) {
 
   return (
     <div
-      className="fixed inset-0 z-[150] flex items-start justify-center bg-ink/30 px-4 pt-[12vh]"
+      className="fixed inset-0 z-[150] flex items-start justify-center bg-black/30 px-4 pt-[12vh] dark:bg-black/60"
       onMouseDown={(e) => e.target === e.currentTarget && setOpen(false)}
       onKeyDown={(e) => {
         if (e.key === "Escape") setOpen(false);
@@ -124,7 +124,7 @@ export function SearchOverlay({ index }: { index: SearchItem[] }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search by topic, brand or idea…"
-            className="h-16 flex-1 bg-transparent text-lg font-medium tracking-[-0.01em] text-ink outline-none placeholder:text-[#6b6760]"
+            className="h-16 flex-1 bg-transparent text-lg font-medium tracking-[-0.01em] text-ink outline-none placeholder:text-placeholder"
             role="combobox"
             aria-expanded="true"
             aria-controls="mb-search-results"
@@ -151,7 +151,7 @@ export function SearchOverlay({ index }: { index: SearchItem[] }) {
                     <span className="block truncate font-semibold tracking-[-0.015em] text-ink">{r.title}</span>
                     <span className="block truncate text-sm text-slate">{r.sub}</span>
                   </span>
-                  <IconArrow size={16} className={`shrink-0 text-basil transition-opacity ${i === active ? "opacity-100" : "opacity-0"}`} />
+                  <IconArrow size={16} className={`shrink-0 text-accent transition-opacity ${i === active ? "opacity-100" : "opacity-0"}`} />
                 </button>
               </li>
             ))

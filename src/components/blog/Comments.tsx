@@ -64,7 +64,7 @@ export function Comments({ slug }: { slug: string }) {
               aria-describedby={errors.name ? `${id}-name-err` : undefined}
             />
             {errors.name ? (
-              <p id={`${id}-name-err`} className="mt-1.5 text-sm font-medium text-[#8f2d1f]">
+              <p id={`${id}-name-err`} className="mt-1.5 text-sm font-medium text-danger">
                 {errors.name}
               </p>
             ) : null}
@@ -84,13 +84,13 @@ export function Comments({ slug }: { slug: string }) {
               aria-describedby={errors.text ? `${id}-text-err` : undefined}
             />
             {errors.text ? (
-              <p id={`${id}-text-err`} className="mt-1.5 text-sm font-medium text-[#8f2d1f]">
+              <p id={`${id}-text-err`} className="mt-1.5 text-sm font-medium text-danger">
                 {errors.text}
               </p>
             ) : null}
           </div>
           {errors.form ? (
-            <p role="alert" className="text-sm font-medium text-[#8f2d1f]">
+            <p role="alert" className="text-sm font-medium text-danger">
               {errors.form}
             </p>
           ) : null}

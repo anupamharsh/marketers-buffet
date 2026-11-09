@@ -7,6 +7,7 @@ import { nav, site } from "@/content/site";
 import { useLenis } from "@/components/motion/SmoothScroll";
 import { Logo } from "@/components/brand/Logo";
 import { IconArrow, IconClose } from "@/components/ui/Icons";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -61,9 +62,12 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
         <Link href="/" onClick={onClose} className="text-[1.2rem]" aria-label="Marketers Buffet, home" tabIndex={open ? 0 : -1}>
           <Logo />
         </Link>
-        <button onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full hover:bg-ink/5" aria-label="Close menu" tabIndex={open ? 0 : -1}>
-          <IconClose size={22} />
-        </button>
+        <span className="flex items-center gap-1">
+          <ThemeToggle />
+          <button onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full hover:bg-ink/5" aria-label="Close menu" tabIndex={open ? 0 : -1}>
+            <IconClose size={22} />
+          </button>
+        </span>
       </div>
       <nav aria-label="Mobile" className="shell relative flex flex-1 flex-col justify-center">
         <ul className="grid gap-1">
@@ -84,7 +88,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
                 ) : (
                   n.label
                 )}
-                <IconArrow size={28} className="text-basil opacity-0 transition-opacity group-focus-visible:opacity-100 group-active:opacity-100" />
+                <IconArrow size={28} className="text-accent opacity-0 transition-opacity group-focus-visible:opacity-100 group-active:opacity-100" />
               </Link>
             </li>
           ))}

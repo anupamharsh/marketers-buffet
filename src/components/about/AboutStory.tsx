@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, SplitText, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, SplitText, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { rich } from "@/lib/text";
 import { Cloche } from "@/components/brand/Cloche";
 
@@ -46,7 +46,7 @@ export function AboutStory() {
           rotate: -12,
           svgOrigin: "330 268",
           ease: "none",
-          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.8 },
+          scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: SCRUB },
         });
         return () => splits.forEach((s) => s.revert());
       });

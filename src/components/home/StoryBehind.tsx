@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { rich } from "@/lib/text";
 import { Cloche } from "@/components/brand/Cloche";
 import { AppIcon } from "@/components/ui/Props";
@@ -53,6 +53,7 @@ export function StoryBehind() {
         const counter = q("[data-count]")[0] as HTMLElement;
         const segs = q("[data-seg]");
         const others = q("[data-other]");
+        let step = 0;
 
         gsap.set(lines, { autoAlpha: 0, y: 40 });
         gsap.set(lines[0], { autoAlpha: 1, y: 0 });
@@ -75,12 +76,16 @@ export function StoryBehind() {
             trigger: q("[data-pin]")[0],
             start: "top top",
             end: "+=380%",
-            scrub: 0.8,
+            scrub: SCRUB,
             pin: true,
             anticipatePin: 1,
+            fastScrollEnd: true,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
+              // Touch the DOM only when the step actually changes, not on every scroll frame.
               const i = Math.min(3, Math.floor(self.progress * 4.0001));
+              if (i === step) return;
+              step = i;
               counter.textContent = `0${i + 1}`;
               segs.forEach((s, j) => (s.style.backgroundColor = j <= i ? "#F8F7F4" : "#333333"));
             },
@@ -143,7 +148,7 @@ export function StoryBehind() {
         <div className="shell grid h-full items-center gap-14 py-24 lg:grid-cols-12 lg:gap-8 lg:py-0">
           <div className="relative lg:col-span-5">
             <div className="flex items-center gap-3">
-              <span className="pill bg-mint text-basil">Who&apos;s behind this</span>
+              <span className="pill theme-light bg-mint text-accent">Who&apos;s behind this</span>
               <span className="hidden text-sm font-medium text-muted-cream lg:inline">
                 <span data-count>01</span> / 04
               </span>
@@ -171,10 +176,10 @@ export function StoryBehind() {
 
           {/* The desk (desktop) */}
           <div data-desk className="relative hidden h-[min(640px,76svh)] lg:col-span-7 lg:block" aria-hidden>
-            <div data-orbit className="absolute inset-[6%]">
+            <div data-orbit className="gpu absolute inset-[6%]">
               {CAMPAIGNS.map((c, i) => (
-                <div key={c.name} data-camp className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${SEATS[i].l}%`, top: `${SEATS[i].t}%` }}>
-                  <div data-counter>
+                <div key={c.name} data-camp className="gpu absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${SEATS[i].l}%`, top: `${SEATS[i].t}%` }}>
+                  <div data-counter className="gpu">
                     <div className="card-dark relative w-[210px] p-4">
                       <div className="flex items-center justify-between">
                         <span className="text-[0.95rem] font-semibold tracking-[-0.015em]">{c.name}</span>
@@ -188,7 +193,7 @@ export function StoryBehind() {
                       <span
                         data-badge
                         className={`absolute -right-3 -top-3 grid h-9 min-w-9 place-items-center rounded-full px-2 text-xs font-semibold shadow-lg ${
-                          c.result === "win" ? "bg-mint text-basil" : c.result === "miss" ? "bg-[#3a3835] text-muted-cream" : "bg-cream text-ink"
+                          c.result === "win" ? "theme-light bg-mint text-accent" : c.result === "miss" ? "bg-[#3a3835] text-muted-cream" : "theme-light bg-cream text-ink"
                         }`}
                       >
                         {c.result === "win" ? <IconCheck size={16} /> : c.result === "miss" ? <IconCross size={16} /> : "why?"}
@@ -200,7 +205,7 @@ export function StoryBehind() {
             </div>
 
             {/* Two deadlines */}
-            <div data-other className="card-dark absolute left-[30%] top-[38%] flex w-[250px] items-center gap-3 p-3.5">
+            <div data-other className="gpu card-dark absolute left-[30%] top-[38%] flex w-[250px] items-center gap-3 p-3.5">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#3a3835] text-cream">
                 <IconCalendar size={20} />
               </span>
@@ -209,7 +214,7 @@ export function StoryBehind() {
                 <span className="block text-sm text-muted-cream">Today, 6:00 pm</span>
               </span>
             </div>
-            <div data-other className="card-dark absolute left-[44%] top-[55%] flex w-[250px] items-center gap-3 p-3.5">
+            <div data-other className="gpu card-dark absolute left-[44%] top-[55%] flex w-[250px] items-center gap-3 p-3.5">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#3a3835] text-cream">
                 <IconCalendar size={20} />
               </span>
@@ -219,17 +224,17 @@ export function StoryBehind() {
               </span>
             </div>
             {/* One half-finished idea */}
-            <div data-other className="absolute left-[36%] top-[18%] w-[230px] rotate-[-4deg] rounded-[18px] bg-cream p-4 text-ink shadow-xl">
+            <div data-other className="theme-light gpu absolute left-[36%] top-[18%] w-[230px] rotate-[-4deg] rounded-[18px] bg-cream p-4 text-ink shadow-xl">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate">
                 <AppIcon letter="N" tint="peach" size={22} /> Notes
               </div>
               <p className="mt-2 text-[0.95rem] font-medium tracking-[-0.01em]">
-                what if the ad was just a screenshot of<span className="caret text-basil" />
+                what if the ad was just a screenshot of<span className="caret text-accent" />
               </p>
             </div>
 
             {/* The notebook */}
-            <div data-notebook className="tex-ruled absolute left-1/2 top-1/2 w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-[24px] bg-cream p-7 text-ink shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]">
+            <div data-notebook className="theme-light gpu tex-ruled absolute left-1/2 top-1/2 w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-[24px] bg-cream p-7 text-ink shadow-[0_40px_80px_-30px_rgba(0,0,0,0.7)]">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate">Notes worth keeping</span>
                 <Cloche className="h-6 w-auto" />
@@ -248,7 +253,7 @@ export function StoryBehind() {
           </div>
 
           {/* Mobile: just the notebook */}
-          <div className="tex-ruled rounded-[24px] bg-cream p-6 text-ink lg:hidden" aria-hidden>
+          <div className="theme-light tex-ruled rounded-[24px] bg-cream p-6 text-ink lg:hidden" aria-hidden>
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate">Notes worth keeping</span>
               <Cloche className="h-6 w-auto" />

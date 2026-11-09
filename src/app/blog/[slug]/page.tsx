@@ -131,10 +131,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
 
           {/* End-of-post signup */}
-          <div className="relative isolate mt-14 overflow-hidden rounded-[28px] bg-charcoal p-7 text-cream md:p-10">
+          <div className="on-dark relative isolate mt-14 overflow-hidden rounded-[28px] bg-charcoal p-7 text-cream md:p-10">
             <span className="glow glow-basil -z-10" style={{ width: "700px", left: "-150px", bottom: "-450px" }} />
             <p className="text-[clamp(1.75rem,3vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.04em]">
-              There&apos;s more where this <span className="serif text-mint">came from.</span>
+              There&apos;s more where this <span className="serif text-accent">came from.</span>
             </p>
             <p className="mt-2 text-muted-cream">Every two weeks.</p>
             <div className="mt-7">

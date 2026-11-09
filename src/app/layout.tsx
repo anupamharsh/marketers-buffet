@@ -8,6 +8,7 @@ import { library } from "@/content/library";
 import { formatLabel } from "@/content/types";
 import { plain } from "@/lib/text";
 import { CONSENT_DEFAULTS_SCRIPT } from "@/lib/consent";
+import { THEME_SCRIPT } from "@/lib/theme";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -51,7 +52,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1E4D3E",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F8F7F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#1C1C1C" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -86,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-IN" className={`${inter.variable} ${instrument.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: CONSENT_DEFAULTS_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + CONSENT_DEFAULTS_SCRIPT }} />
       </head>
       <body>
         <a href="#main" className="skip-link">

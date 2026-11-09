@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { legal, nav, site } from "@/content/site";
 import { track } from "@/lib/analytics";
 import { Cloche } from "@/components/brand/Cloche";
@@ -24,7 +24,7 @@ export function Footer() {
           {
             yPercent: 0,
             ease: "none",
-            scrollTrigger: { trigger: ref.current, start: "top bottom", end: "bottom bottom", scrub: 0.6 },
+            scrollTrigger: { trigger: ref.current, start: "top bottom", end: "bottom bottom", scrub: SCRUB },
           },
         );
         gsap.fromTo(
@@ -35,7 +35,7 @@ export function Footer() {
             rotate: -16,
             svgOrigin: "330 268",
             ease: "none",
-            scrollTrigger: { trigger: ref.current, start: "top 60%", end: "bottom bottom", scrub: 0.8 },
+            scrollTrigger: { trigger: ref.current, start: "top 60%", end: "bottom bottom", scrub: SCRUB },
           },
         );
       });
@@ -122,7 +122,7 @@ export function Footer() {
           </div>
           <div className="col-span-2 flex items-start md:col-span-1 md:justify-end">
             <div data-footer-cloche className="w-28 md:w-32">
-              <Cloche color="#F8F7F4" highlight="#1C1C1C" className="h-auto w-full overflow-visible" />
+              <Cloche color="#F8F7F4" highlight="var(--color-charcoal)" className="h-auto w-full overflow-visible" />
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export function Footer() {
       <div className="relative mt-16 overflow-hidden" aria-hidden>
         <p
           data-footer-word
-          className="shell whitespace-nowrap pb-[0.5vw] text-[clamp(3.2rem,13.6vw,14rem)] font-bold leading-[0.8] tracking-[-0.06em] text-cream/[0.08]"
+          className="gpu shell whitespace-nowrap pb-[0.5vw] text-[clamp(3.2rem,13.6vw,14rem)] font-bold leading-[0.8] tracking-[-0.06em] text-cream/[0.08]"
         >
           Marketers <span className="font-serif font-normal italic tracking-[-0.03em]">Buffet</span>
         </p>

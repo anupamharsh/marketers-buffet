@@ -83,7 +83,7 @@ export function BookingWidget() {
             aria-current={step === i + 1 ? "step" : undefined}
             className={`flex flex-1 items-center gap-2 px-5 py-4 ${step === i + 1 ? "text-ink" : "text-slate"} ${i ? "border-l border-line" : ""}`}
           >
-            <span className={`grid h-6 w-6 place-items-center rounded-full text-xs ${step > i + 1 ? "bg-basil text-cream" : step === i + 1 ? "bg-ink text-cream" : "bg-line text-slate"}`}>
+            <span className={`grid h-6 w-6 place-items-center rounded-full text-xs ${step > i + 1 ? "bg-basil text-cream" : step === i + 1 ? "bg-ink text-paper" : "bg-line text-slate"}`}>
               {step > i + 1 ? <IconCheck size={13} /> : i + 1}
             </span>
             <span className="hidden sm:inline">{s}</span>
@@ -110,7 +110,7 @@ export function BookingWidget() {
                     }`}
                   >
                     <input type="radio" name="type" value={o.v} checked={type === o.v} onChange={() => setType(o.v)} className="sr-only" />
-                    <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${type === o.v ? "border-basil" : "border-[#bdb9b1]"}`} aria-hidden>
+                    <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${type === o.v ? "border-basil" : "border-ink/30"}`} aria-hidden>
                       {type === o.v ? <span className="h-2.5 w-2.5 rounded-full bg-basil" /> : null}
                     </span>
                     <span>
@@ -136,8 +136,8 @@ export function BookingWidget() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="max-w-sm text-sm text-slate">
                 By continuing, you agree to the{" "}
-                <Link href="/terms" className="font-medium text-basil underline underline-offset-2">Terms</Link> and{" "}
-                <Link href="/refund-policy" className="font-medium text-basil underline underline-offset-2">Refund Policy</Link>.
+                <Link href="/terms" className="font-medium text-accent underline underline-offset-2">Terms</Link> and{" "}
+                <Link href="/refund-policy" className="font-medium text-accent underline underline-offset-2">Refund Policy</Link>.
               </p>
               <button type="submit" className="btn btn-primary">
                 Pick a time <IconArrow size={18} className="btn-arrow" />
@@ -164,7 +164,7 @@ export function BookingWidget() {
                     setDay(i);
                     setTime(null);
                   }}
-                  className={`flex min-w-[72px] shrink-0 flex-col items-center rounded-2xl border px-3 py-3 transition-colors ${day === i ? "border-ink bg-ink text-cream" : "border-line bg-white text-ink hover:border-ink/30"}`}
+                  className={`flex min-w-[72px] shrink-0 flex-col items-center rounded-2xl border px-3 py-3 transition-colors ${day === i ? "border-ink bg-ink text-paper" : "border-line bg-white text-ink hover:border-ink/30"}`}
                 >
                   <span className="text-xs font-medium opacity-80">{fmt(d, { weekday: "short" })}</span>
                   <span className="text-xl font-bold tracking-[-0.03em]">{d.getDate()}</span>
@@ -183,7 +183,7 @@ export function BookingWidget() {
                     aria-pressed={time === t}
                     onClick={() => setTime(t)}
                     className={`min-h-12 rounded-xl border text-[0.95rem] font-semibold transition-colors ${
-                      off ? "cursor-not-allowed border-line bg-paper text-[#77736c] line-through" : time === t ? "border-basil bg-basil text-cream" : "border-line bg-white text-ink hover:border-basil"
+                      off ? "cursor-not-allowed border-line bg-paper text-stone line-through" : time === t ? "border-basil bg-basil text-cream" : "border-line bg-white text-ink hover:border-basil"
                     }`}
                   >
                     {t}
@@ -227,7 +227,7 @@ function Field({ id, label, error, children }: { id: string; label: string; erro
       </label>
       {children}
       {error ? (
-        <p id={`${id}-err`} className="mt-1.5 text-sm font-medium text-[#8f2d1f]">
+        <p id={`${id}-err`} className="mt-1.5 text-sm font-medium text-danger">
           {error}
         </p>
       ) : null}

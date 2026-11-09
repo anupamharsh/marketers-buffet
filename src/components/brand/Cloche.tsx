@@ -1,7 +1,9 @@
 import type { SVGProps } from "react";
 
 type Props = SVGProps<SVGSVGElement> & {
+  /** Any CSS colour. Defaults follow the theme: Deep Basil on light, cream on dark. */
   color?: string;
+  /** Highlight curve colour; null knocks it out. Defaults to the page background. */
   highlight?: string | null;
   /** Show the three "typing" dots on the dome (for animation) */
   dots?: boolean;
@@ -15,8 +17,10 @@ type Props = SVGProps<SVGSVGElement> & {
  *   .mb-plate rim + speech-bubble tail (stays)
  *   .mb-dot   three typing dots on the dome
  * Geometry is identical to public/brand/icon-primary.svg.
+ * Colours are applied as CSS (not attributes) so they can use theme variables.
  */
-export function Cloche({ color = "#1E4D3E", highlight = "#F8F7F4", dots = false, title, ...rest }: Props) {
+export function Cloche({ color = "var(--mb-cloche)", highlight = "var(--mb-cloche-hi)", dots = false, title, ...rest }: Props) {
+  const dotFill = highlight || "var(--mb-cloche-hi)";
   return (
     <svg
       viewBox="40 80 320 290"
@@ -28,27 +32,21 @@ export function Cloche({ color = "#1E4D3E", highlight = "#F8F7F4", dots = false,
       {...rest}
     >
       {title ? <title>{title}</title> : null}
-      <g className="mb-plate" fill={color}>
+      <g className="mb-plate" style={{ fill: color }}>
         <path d="M68 256 H332 A22 22 0 0 1 332 300 H68 A22 22 0 0 1 68 256 Z" />
         <path d="M96 292 H160 L84 350 C73 358 61 352 65 339 Z" />
       </g>
       <g className="mb-lid">
-        <g fill={color}>
+        <g style={{ fill: color }}>
           <path d="M180 118 A20 20 0 1 0 220 118 A20 20 0 1 0 180 118 Z" />
           <path d="M189 118 H211 V148 H189 Z" />
           <path d="M70 268 A130 130 0 0 1 330 268 Z" />
         </g>
         {highlight ? (
-          <path
-            className="mb-highlight"
-            d="M116 229 A92 92 0 0 1 161 185"
-            stroke={highlight}
-            strokeWidth="16"
-            strokeLinecap="round"
-          />
+          <path className="mb-highlight" d="M116 229 A92 92 0 0 1 161 185" style={{ stroke: highlight }} strokeWidth="16" strokeLinecap="round" />
         ) : null}
         {dots ? (
-          <g fill={highlight || "#F8F7F4"}>
+          <g style={{ fill: dotFill }}>
             <circle className="mb-dot" cx="164" cy="226" r="11" opacity="0" />
             <circle className="mb-dot" cx="200" cy="226" r="11" opacity="0" />
             <circle className="mb-dot" cx="236" cy="226" r="11" opacity="0" />

@@ -50,7 +50,7 @@ export function Scribble({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const p = PATHS[kind];
-  const color = tone === "basil" ? "#1E4D3E" : tone === "mint" ? "#D6F2E6" : "#141414";
+  const color = tone === "basil" ? "var(--color-accent)" : tone === "mint" ? "#D6F2E6" : "var(--color-ink)";
 
   useGSAP(
     () => {
@@ -89,7 +89,7 @@ export function Scribble({
           data-scribble
           d={p.d}
           fill="none"
-          stroke={color}
+          style={{ stroke: color }}
           strokeWidth="2.25"
           strokeLinecap="round"
           strokeLinejoin="round"

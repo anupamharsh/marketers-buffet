@@ -33,7 +33,7 @@ export function PostCard({ post, variant = "default", headingLevel = 3 }: { post
           </Link>
         </H>
         <p className={`mt-3 text-slate ${feature ? "max-w-[46ch] text-lg" : "text-[1rem] leading-relaxed"}`}>{post.hook}</p>
-        <span className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-basil">
+        <span className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-accent">
           Read it
           <IconArrowUpRight size={16} className="transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </span>

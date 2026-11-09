@@ -94,7 +94,7 @@ export function NewsletterForm({
         </button>
       </div>
       {error ? (
-        <p id={`${id}-err`} role="alert" className={`mt-2 text-sm font-medium ${dark ? "text-peach" : "text-[#8f2d1f]"}`}>
+        <p id={`${id}-err`} role="alert" className={`mt-2 text-sm font-medium text-danger`}>
           {error}
         </p>
       ) : smallPrint !== null ? (

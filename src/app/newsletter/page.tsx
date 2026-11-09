@@ -73,9 +73,9 @@ export default function NewsletterPage() {
           <Reveal className="mt-12">
             <div className="card mx-auto max-w-4xl overflow-hidden !rounded-[24px]">
               <div className="flex items-center gap-2 border-b border-line bg-paper px-5 py-3.5" aria-hidden>
-                <span className="h-3 w-3 rounded-full bg-[#e6e3dc]" />
-                <span className="h-3 w-3 rounded-full bg-[#e6e3dc]" />
-                <span className="h-3 w-3 rounded-full bg-[#e6e3dc]" />
+                <span className="h-3 w-3 rounded-full bg-ink/15" />
+                <span className="h-3 w-3 rounded-full bg-ink/15" />
+                <span className="h-3 w-3 rounded-full bg-ink/15" />
                 <span className="ml-4 text-sm font-medium text-slate">Inbox</span>
               </div>
               <div className="grid gap-1 border-b border-line px-6 py-5 text-sm md:px-10">
@@ -101,7 +101,7 @@ export default function NewsletterPage() {
                     { k: "The shortcut", v: sample.shortcut },
                   ].map((s) => (
                     <div key={s.k} className="grid gap-2 border-l-2 border-basil pl-5 md:grid-cols-[10rem_1fr] md:gap-8 md:border-l-0 md:pl-0">
-                      <p className="font-semibold text-basil">{s.k}</p>
+                      <p className="font-semibold text-accent">{s.k}</p>
                       <p className="text-lg leading-relaxed text-ink">{s.v}</p>
                     </div>
                   ))}

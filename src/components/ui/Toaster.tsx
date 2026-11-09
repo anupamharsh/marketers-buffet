@@ -33,8 +33,8 @@ export function Toaster() {
   return (
     <div aria-live="polite" role="status" className="pointer-events-none fixed inset-x-0 bottom-6 z-[120] flex justify-center px-4">
       {msg ? (
-        <div ref={ref} className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink py-3 pl-3 pr-5 text-[0.95rem] font-medium text-cream shadow-[var(--shadow-lift)]">
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-basil">
+        <div ref={ref} className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink py-3 pl-3 pr-5 text-[0.95rem] font-medium text-paper shadow-[var(--shadow-lift)]">
+          <span className="grid h-7 w-7 place-items-center rounded-full bg-basil text-cream">
             <IconCheck size={15} />
           </span>
           {msg}

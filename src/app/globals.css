@@ -1,7 +1,12 @@
 @import "tailwindcss";
 
+/* `dark:` utilities follow the .dark class on <html> (set by ThemeToggle / inline head script). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ──────────────────────────────────────────────────────────────
    Marketers Buffet — design tokens (from Brand book v2)
+   @theme registers the names for Tailwind utilities; the actual values
+   are switched per theme by the scopes below.
    ────────────────────────────────────────────────────────────── */
 @theme {
   --color-paper: #f8f7f4;
@@ -10,12 +15,15 @@
   --color-slate: #55524d;
   --color-stone: #8a867f; /* decorative only: fails 4.5:1 on paper for small text */
   --color-line: #eceae5;
-  --color-basil: #1e4d3e;
+  --color-basil: #1e4d3e; /* fills */
   --color-basil-deep: #163a2f;
+  --color-accent: #1e4d3e; /* accent text: links, numbers, serif words */
   --color-mint: #d6f2e6;
   --color-hl: #cdefe0;
   --color-lavender: #e9e4fa;
   --color-peach: #fde6dc;
+  --color-danger: #8f2d1f;
+  --color-placeholder: #6b6760;
   --color-charcoal: #1c1c1c;
   --color-cream: #f8f7f4;
   --color-muted-cream: #a8a49d;
@@ -29,9 +37,110 @@
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 
-  --shadow-card: 0 1px 2px rgb(20 20 20 / 0.04), 0 10px 30px -12px rgb(20 20 20 / 0.14);
-  --shadow-lift: 0 2px 4px rgb(20 20 20 / 0.04), 0 24px 50px -18px rgb(20 20 20 / 0.22);
+  --shadow-card: var(--mb-shadow-card);
+  --shadow-lift: var(--mb-shadow-lift);
   --shadow-dark: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 20px 40px -20px rgb(0 0 0 / 0.6);
+}
+
+/* ── Theme scopes ─────────────────────────────────────────────────
+   Light: default, and any .theme-light island (paper objects like the
+   notebook that stay light inside dark scenes).
+   Dark: html.dark, and .on-dark sections (Basil Night) in either theme. */
+:root,
+.theme-light,
+.dark .theme-light,
+.on-dark .theme-light {
+  color-scheme: light;
+  --color-paper: #f8f7f4;
+  --color-white: #ffffff;
+  --color-ink: #141414;
+  --color-slate: #55524d;
+  --color-line: #eceae5;
+  --color-basil: #1e4d3e;
+  --color-basil-deep: #163a2f;
+  --color-accent: #1e4d3e;
+  --color-mint: #d6f2e6;
+  --color-hl: #cdefe0;
+  --color-lavender: #e9e4fa;
+  --color-lav-ink: #3c3466;
+  --color-danger: #8f2d1f;
+  --color-placeholder: #6b6760;
+
+  --mb-cloche: #1e4d3e;
+  --mb-cloche-hi: #f8f7f4;
+
+  --mb-btn-bg: #1e4d3e;
+  --mb-btn-fg: #f8f7f4;
+  --mb-btn-hover: #163a2f;
+  --mb-btn-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset, 0 8px 22px -10px rgb(30 77 62 / 0.7);
+
+  --mb-shadow-card: 0 1px 2px rgb(20 20 20 / 0.04), 0 10px 30px -12px rgb(20 20 20 / 0.14);
+  --mb-shadow-lift: 0 2px 4px rgb(20 20 20 / 0.04), 0 24px 50px -18px rgb(20 20 20 / 0.22);
+
+  --mb-tex-dot: rgb(20 20 20 / 0.075);
+  --mb-tex-line: rgb(20 20 20 / 0.04);
+  --mb-tex-rule: rgb(20 20 20 / 0.05);
+
+  --mb-glow-mint: 214 242 230;
+  --mb-glow-mint-a: 0.95;
+  --mb-glow-lav: 233 228 250;
+  --mb-glow-lav-a: 0.95;
+  --mb-focus: #1e4d3e;
+}
+
+.dark,
+.on-dark {
+  color-scheme: dark;
+  --color-paper: #1c1c1c;
+  --color-white: #262626;
+  --color-ink: #f8f7f4;
+  --color-slate: #a8a49d;
+  --color-line: #333333;
+  --color-basil: #2a6552;
+  --color-basil-deep: #225443;
+  --color-accent: #cdefe0;
+  --color-mint: #1f3a31;
+  --color-hl: #1e4d3e;
+  --color-lavender: #2c2840;
+  --color-lav-ink: #ddd6f7;
+  --color-danger: #f4a896;
+  --color-placeholder: #8f8b84;
+
+  --mb-cloche: #f8f7f4;
+  --mb-cloche-hi: #1c1c1c;
+
+  --mb-btn-bg: #d6f2e6;
+  --mb-btn-fg: #12332a;
+  --mb-btn-hover: #c3ead8;
+  --mb-btn-shadow: 0 8px 24px -12px rgb(205 239 224 / 0.35);
+
+  --mb-shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 14px 32px -16px rgb(0 0 0 / 0.6);
+  --mb-shadow-lift: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 28px 56px -22px rgb(0 0 0 / 0.75);
+
+  --mb-tex-dot: rgb(248 247 244 / 0.06);
+  --mb-tex-line: rgb(248 247 244 / 0.035);
+  --mb-tex-rule: rgb(248 247 244 / 0.045);
+
+  --mb-glow-mint: 38 120 92;
+  --mb-glow-mint-a: 0.34;
+  --mb-glow-lav: 112 96 184;
+  --mb-glow-lav-a: 0.22;
+  --mb-focus: #cdefe0;
+}
+/* Page-level only: "Basil Night" sections sit a step darker than the dark page. */
+.dark {
+  --color-charcoal: #121212;
+}
+
+/* Suppress colour transitions while the theme flips, so nothing lags behind. */
+.theme-switching,
+.theme-switching * {
+  transition: none !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 /* ── Base ─────────────────────────────────────────────────────── */
@@ -56,13 +165,9 @@
     color: var(--color-ink);
   }
   :focus-visible {
-    outline: 2px solid var(--color-basil);
+    outline: 2px solid var(--mb-focus);
     outline-offset: 3px;
     border-radius: 6px;
-  }
-  .on-dark :focus-visible,
-  .on-dark:focus-visible {
-    outline-color: var(--color-mint);
   }
   img,
   svg {
@@ -96,6 +201,13 @@ html.lenis body {
   max-width: 1440px;
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 5rem);
+}
+
+/* Promote elements that move every frame to their own GPU layer, so the
+   browser only re-composites them instead of repainting shadows and text. */
+@utility gpu {
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* ── Type ─────────────────────────────────────────────────────── */
@@ -141,7 +253,7 @@ html.lenis body {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  color: var(--color-basil);
+  color: var(--color-accent);
   letter-spacing: -0.02em;
   line-height: 0.9;
 }
@@ -155,10 +267,7 @@ html.lenis body {
   line-height: 0.9;
 }
 .serif-basil {
-  color: var(--color-basil);
-}
-.on-dark .serif-basil {
-  color: var(--color-mint);
+  color: var(--color-accent);
 }
 
 /* Mint highlighter sweep — covers bottom 55% of the letters, rounded ends */
@@ -180,9 +289,6 @@ html.lenis body {
   background: color-mix(in srgb, var(--color-hl) 88%, transparent);
   transform-origin: 0 50%;
   transform: scaleX(var(--hl));
-}
-.on-dark .hl::before {
-  background: color-mix(in srgb, var(--color-basil) 85%, transparent);
 }
 
 /* Readable long-form */
@@ -211,7 +317,7 @@ html.lenis body {
   scroll-margin-top: 7rem;
 }
 .prose-mb a {
-  color: var(--color-basil);
+  color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
@@ -237,7 +343,7 @@ html.lenis body {
   width: 0.42em;
   height: 0.42em;
   border-radius: 99px;
-  background: var(--color-basil);
+  background: var(--color-accent);
 }
 .prose-mb ol {
   list-style: decimal;
@@ -248,18 +354,17 @@ html.lenis body {
 
 /* ── Textures ─────────────────────────────────────────────────── */
 .tex-dots {
-  background-image: radial-gradient(rgb(20 20 20 / 0.075) 1px, transparent 1.3px);
+  background-image: radial-gradient(var(--mb-tex-dot) 1px, transparent 1.3px);
   background-size: 24px 24px;
 }
-.on-dark .tex-dots,
 .tex-dots-dark {
   background-image: radial-gradient(rgb(248 247 244 / 0.06) 1px, transparent 1.3px);
   background-size: 24px 24px;
 }
 .tex-grid {
   background-image:
-    linear-gradient(rgb(20 20 20 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(20 20 20 / 0.04) 1px, transparent 1px);
+    linear-gradient(var(--mb-tex-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mb-tex-line) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 .tex-ruled {
@@ -267,8 +372,8 @@ html.lenis body {
     to bottom,
     transparent 0,
     transparent 55px,
-    rgb(20 20 20 / 0.05) 55px,
-    rgb(20 20 20 / 0.05) 56px
+    var(--mb-tex-rule) 55px,
+    var(--mb-tex-rule) 56px
   );
 }
 .mask-fade-y {
@@ -278,24 +383,23 @@ html.lenis body {
   mask-image: linear-gradient(to bottom, #000 55%, transparent);
 }
 
-/* Film grain: 2-3% noise, always on */
+/* Film grain: 2-3% noise, always on.
+   Static and viewport-sized on purpose: an animated, blended full-screen layer
+   forces the whole page to be re-composited every frame, which was the main
+   cause of scroll jank. */
 .grain {
   pointer-events: none;
   position: fixed;
-  inset: -50%;
+  inset: 0;
   z-index: 90;
-  opacity: 0.05;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  animation: grain 1.2s steps(6) infinite;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 200px 200px;
+  transform: translateZ(0);
 }
-@keyframes grain {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-3%, 2%); }
-  40% { transform: translate(2%, -3%); }
-  60% { transform: translate(-2%, -1%); }
-  80% { transform: translate(3%, 3%); }
-  100% { transform: translate(0, 0); }
+.dark .grain {
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 /* Glows: light falling on paper, never a tech gradient */
@@ -306,10 +410,20 @@ html.lenis body {
   aspect-ratio: 1;
 }
 .glow-mint {
-  background: radial-gradient(closest-side, rgb(214 242 230 / 0.95), rgb(214 242 230 / 0.45) 45%, transparent 100%);
+  background: radial-gradient(
+    closest-side,
+    rgb(var(--mb-glow-mint) / var(--mb-glow-mint-a)),
+    rgb(var(--mb-glow-mint) / calc(var(--mb-glow-mint-a) * 0.47)) 45%,
+    transparent 100%
+  );
 }
 .glow-lavender {
-  background: radial-gradient(closest-side, rgb(233 228 250 / 0.95), rgb(233 228 250 / 0.4) 45%, transparent 100%);
+  background: radial-gradient(
+    closest-side,
+    rgb(var(--mb-glow-lav) / var(--mb-glow-lav-a)),
+    rgb(var(--mb-glow-lav) / calc(var(--mb-glow-lav-a) * 0.42)) 45%,
+    transparent 100%
+  );
 }
 .glow-basil {
   background: radial-gradient(closest-side, rgb(30 77 62 / 0.55), rgb(30 77 62 / 0.18) 50%, transparent 100%);
@@ -373,19 +487,19 @@ html.lenis body {
   font-size: 0.9375rem;
 }
 .btn-primary {
-  background: var(--color-basil);
-  color: var(--color-cream);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.12) inset, 0 8px 22px -10px rgb(30 77 62 / 0.7);
+  background: var(--mb-btn-bg);
+  color: var(--mb-btn-fg);
+  box-shadow: var(--mb-btn-shadow);
 }
 .btn-primary:hover {
-  background: var(--color-basil-deep);
+  background: var(--mb-btn-hover);
 }
 .btn-ink {
   background: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-paper);
 }
 .btn-ink:hover {
-  background: #000;
+  background: color-mix(in srgb, var(--color-ink) 86%, var(--color-paper));
 }
 .btn-ghost {
   background: var(--color-white);
@@ -394,11 +508,12 @@ html.lenis body {
   box-shadow: var(--shadow-card);
 }
 .btn-ghost:hover {
-  border-color: #d9d6cf;
+  border-color: color-mix(in srgb, var(--color-ink) 22%, transparent);
 }
+/* Always a light button: used on dark surfaces */
 .btn-cream {
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: #f8f7f4;
+  color: #141414;
 }
 .btn-cream:hover {
   background: #fff;
@@ -430,15 +545,15 @@ html.lenis body {
 }
 .pill-series {
   background: var(--color-basil);
-  color: var(--color-cream);
+  color: #f8f7f4;
 }
 .pill-tag {
   background: var(--color-mint);
-  color: var(--color-basil);
+  color: var(--color-accent);
 }
 .pill-lav {
   background: var(--color-lavender);
-  color: #3c3466;
+  color: var(--color-lav-ink);
 }
 .pill-plain {
   background: var(--color-white);
@@ -447,12 +562,7 @@ html.lenis body {
 }
 .pill-ink {
   background: var(--color-ink);
-  color: var(--color-cream);
-}
-.on-dark .pill-plain {
-  background: var(--color-card-dark);
-  color: var(--color-cream);
-  border-color: var(--color-line-dark);
+  color: var(--color-paper);
 }
 
 /* Filter chips (segmented) */
@@ -472,11 +582,11 @@ html.lenis body {
     border-color 0.25s;
 }
 .chip:hover {
-  background: rgb(20 20 20 / 0.04);
+  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
 }
 .chip[aria-pressed="true"] {
   background: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-paper);
 }
 
 /* Inputs */
@@ -498,27 +608,15 @@ textarea.field {
   resize: vertical;
 }
 .field::placeholder {
-  color: #6b6760;
+  color: var(--color-placeholder);
 }
 .field:focus {
   outline: none;
-  border-color: var(--color-basil);
-  box-shadow: 0 0 0 4px rgb(214 242 230 / 0.9);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-mint) 90%, transparent);
 }
 .field[aria-invalid="true"] {
-  border-color: #8f2d1f;
-}
-.on-dark .field {
-  background: var(--color-card-dark);
-  border-color: var(--color-line-dark);
-  color: var(--color-cream);
-}
-.on-dark .field::placeholder {
-  color: var(--color-muted-cream);
-}
-.on-dark .field:focus {
-  border-color: var(--color-mint);
-  box-shadow: 0 0 0 4px rgb(30 77 62 / 0.6);
+  border-color: var(--color-danger);
 }
 
 /* Link underline that draws in */
@@ -544,7 +642,7 @@ textarea.field {
   padding: 0.75rem 1.1rem;
   border-radius: 12px;
   background: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-paper);
   font-weight: 500;
 }
 .skip-link:focus {
@@ -586,9 +684,6 @@ textarea.field {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-  }
-  .grain {
-    animation: none;
   }
   .js [data-reveal] {
     opacity: 1;

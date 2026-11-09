@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, MQ } from "@/lib/gsap";
+import { gsap, useGSAP, MQ, SCRUB } from "@/lib/gsap";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { RevealText } from "@/components/motion/RevealText";
 import { Cloche } from "@/components/brand/Cloche";
@@ -28,7 +28,7 @@ export function NewsletterSection({ location = "home" as const }: { location?: "
             x: (i: number) => [-30, 0, 34][i],
             y: (i: number) => [16, -12, 22][i],
             ease: "power2.out",
-            scrollTrigger: { trigger: q("[data-stack]")[0], start: "top 85%", end: "center 45%", scrub: 0.8 },
+            scrollTrigger: { trigger: q("[data-stack]")[0], start: "top 85%", end: "center 45%", scrub: SCRUB },
           },
         );
       });
@@ -60,7 +60,7 @@ export function NewsletterSection({ location = "home" as const }: { location?: "
                 <div
                   key={s.k}
                   data-sheet
-                  className="card absolute inset-x-6 top-6 flex h-[290px] flex-col p-6"
+                  className="gpu card absolute inset-x-6 top-6 flex h-[290px] flex-col p-6"
                   style={{ zIndex: i === 1 ? 3 : i === 0 ? 2 : 1 }}
                 >
                   <div className="flex items-center justify-between border-b border-line pb-4">

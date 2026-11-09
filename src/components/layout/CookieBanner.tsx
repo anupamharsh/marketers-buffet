@@ -62,7 +62,7 @@ export function CookieBanner() {
       <p className="font-semibold tracking-[-0.015em] text-ink">A quick one about cookies.</p>
       <p className="mt-1.5 text-[0.95rem] leading-relaxed text-slate">
         They help me see which posts are useful. Nothing tracks you unless you say yes.{" "}
-        <Link href="/cookie-policy" className="font-medium text-basil underline underline-offset-2">
+        <Link href="/cookie-policy" className="font-medium text-accent underline underline-offset-2">
           Cookie policy
         </Link>
       </p>
@@ -129,10 +129,10 @@ function Toggle({
       <span
         aria-hidden
         className={`relative h-7 w-12 shrink-0 rounded-full transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-basil ${
-          checked ? "bg-basil" : "bg-[#cfccc5]"
+          checked ? "bg-basil" : "bg-ink/20"
         }`}
       >
-        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
+        <span className={`absolute top-1 h-5 w-5 rounded-full bg-cream shadow transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
       </span>
     </label>
   );

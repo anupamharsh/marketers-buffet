@@ -171,7 +171,7 @@ function LibraryCard({ item, onOpen }: { item: LibraryItem; onOpen: () => void }
         <button
           type="button"
           onClick={onOpen}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-semibold text-basil after:absolute after:inset-0 after:content-['']"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 text-sm font-semibold text-accent after:absolute after:inset-0 after:content-['']"
           aria-label={`Why it works: ${item.title}`}
         >
           Why it works <IconArrow size={15} className="transition-transform group-hover:translate-x-1" />
@@ -221,7 +221,7 @@ function ItemDialog({ item, onClose }: { item: LibraryItem; onClose: () => void 
   }, [item, lenis]);
 
   return (
-    <div className="fixed inset-0 z-[140] flex items-end justify-center bg-ink/35 p-3 sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="fixed inset-0 z-[140] flex items-end justify-center bg-black/35 p-3 dark:bg-black/60 sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
         ref={panel}
         role="dialog"
@@ -248,7 +248,7 @@ function ItemDialog({ item, onClose }: { item: LibraryItem; onClose: () => void 
           <Artefact item={item} large />
         </div>
         <div className="mt-8 rounded-[20px] bg-mint/70 p-6">
-          <p className="font-semibold text-basil">Why it works</p>
+          <p className="font-semibold text-accent">Why it works</p>
           <p className="mt-1.5 text-lg leading-relaxed text-ink">{item.why}</p>
         </div>
         <div className="mt-6 flex flex-wrap gap-2">

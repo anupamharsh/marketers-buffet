@@ -41,7 +41,7 @@ export function TemplateAction({ t }: { t: Template }) {
               <button
                 type="button"
                 onClick={() => download(f.type, f.url)}
-                className="grid h-11 w-11 place-items-center rounded-full text-basil hover:bg-mint"
+                className="grid h-11 w-11 place-items-center rounded-full text-accent hover:bg-mint"
                 aria-label={`Download ${f.label} (${f.type})`}
               >
                 <IconDownload size={18} />
@@ -68,11 +68,11 @@ export function TemplateAction({ t }: { t: Template }) {
           </button>
           <p className="mt-3 text-sm text-slate">
             UPI and cards. Files arrive by email with a secure link. By continuing, you agree to the{" "}
-            <Link href="/terms" className="font-medium text-basil underline underline-offset-2">
+            <Link href="/terms" className="font-medium text-accent underline underline-offset-2">
               Terms
             </Link>{" "}
             and{" "}
-            <Link href="/refund-policy" className="font-medium text-basil underline underline-offset-2">
+            <Link href="/refund-policy" className="font-medium text-accent underline underline-offset-2">
               Refund Policy
             </Link>
             .
