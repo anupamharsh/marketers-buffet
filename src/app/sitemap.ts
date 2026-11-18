@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
-import { posts } from "@/content/posts";
-import { templates } from "@/content/templates";
+import { aiEdge, automations, posts, templates } from "@/content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = ["", "/blog", "/templates", "/library", "/newsletter", "/about", "/book-a-call", "/privacy", "/terms", "/refund-policy", "/cookie-policy"];
+  const u = (p: string) => `${site.url}${p}`;
+  const pages = ["", "/blog", "/automations", "/ai-edge", "/templates", "/newsletter", "/book-a-call", "/about", "/privacy", "/terms", "/refunds", "/cookies"];
   return [
-    ...pages.map((p) => ({ url: `${site.url}${p}`, changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.7 })),
-    ...posts.map((p) => ({ url: `${site.url}/blog/${p.slug}`, lastModified: p.publishedAt, priority: 0.8 })),
-    ...templates.map((t) => ({ url: `${site.url}/templates/${t.slug}`, priority: 0.7 })),
+    ...pages.map((p) => ({ url: u(p || "/"), changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.7 })),
+    ...posts.map((p) => ({ url: u(`/blog/${p.slug}`), lastModified: p.date, priority: 0.8 })),
+    ...automations.map((a) => ({ url: u(`/automations/${a.slug}`), lastModified: a.date, priority: 0.8 })),
+    ...aiEdge.map((a) => ({ url: u(`/ai-edge/${a.slug}`), lastModified: a.date, priority: 0.8 })),
+    ...templates.map((t) => ({ url: u(`/templates/${t.slug}`), priority: 0.8 })),
   ];
 }

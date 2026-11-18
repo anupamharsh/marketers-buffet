@@ -6,17 +6,12 @@ import { persistUtms } from "@/lib/analytics";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
-/**
- * Injects Google Tag Manager only after the visitor accepts analytics or
- * marketing cookies. GA4 + Meta Pixel are configured inside GTM, so new
- * tracking can be added without code changes.
- */
+/** Injects Google Tag Manager only after the visitor accepts analytics or marketing cookies. */
 export function Analytics() {
   useEffect(() => {
     persistUtms();
     const load = (c: Consent | null) => {
-      if (!GTM_ID || !c || (!c.analytics && !c.marketing)) return;
-      if (document.getElementById("mb-gtm")) return;
+      if (!GTM_ID || !c || (!c.analytics && !c.marketing) || document.getElementById("mb-gtm")) return;
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
       const s = document.createElement("script");
@@ -30,6 +25,5 @@ export function Analytics() {
     window.addEventListener(CONSENT_EVENT, on);
     return () => window.removeEventListener(CONSENT_EVENT, on);
   }, []);
-
   return null;
 }

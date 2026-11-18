@@ -1,46 +1,36 @@
 # Marketers Buffet
 
-Scroll-animated marketing site built on the Marketers Buffet brand book.
+Personal marketing site of Anupam Harsh: blogs, automations, AI-in-marketing examples, templates (free and paid), a fortnightly newsletter, call booking and user accounts.
 
-**Stack:** Next.js 16 (App Router, static) · React 19 · TypeScript · Tailwind CSS 4 · GSAP 3.15 (ScrollTrigger, SplitText, Flip) · Lenis smooth scroll.
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · General Sans (self-hosted) · Supabase (Postgres, Storage, Auth) · Brevo · Razorpay · Cal ID · Cloudflare Turnstile. Hosted on Netlify.
 
-## Run it
+## Run locally
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run build      # production build
-npm start
+cp .env.example .env.local   # fill in the values
+npm run db:migrate           # creates/updates tables in the "mb" schema (safe to re-run)
+npm run dev
 ```
 
-Copy `.env.example` to `.env.local` and fill in values.
+Production check: `npx next build`, then `npx next start` (only after the build has finished).
 
 ## Where things live
 
 | Path | What |
 | --- | --- |
-| `src/content/` | All content: posts, templates, library, newsletter issues, site config. Field names mirror the brief's CMS spec. |
-| `src/app/` | Pages: home, blog, blog post, templates, template detail, library, newsletter, about, book a call, legal, 404 |
-| `src/components/home/` | Homepage hero + three scroll stories |
-| `src/components/motion/` | Reusable motion: line-mask text reveal, fade-up, hand-drawn scribbles, magnetic buttons, smooth scroll |
-| `src/components/ui/` | Brand UI kit: notification, search bar, good-vs-bad cards, phone frame, generated cover art |
-| `src/lib/analytics.ts` | `track()` helper with the brief's 8 events → GTM dataLayer |
-| `src/app/globals.css` | Design tokens (colours, type, textures, grain, glows) |
+| `src/content/` | All content as typed files (`blog.ts`, `automations.ts`, `ai-edge.ts`, `templates.ts`, `site.ts`). Bodies are lists of blocks (`types.ts`). |
+| `src/app/` | Pages: home, blog, automations, AI edge, templates, newsletter, book a call, about, sign in, account, admin, legal, 404. |
+| `src/app/api/` | Server routes: newsletter, comments, template downloads, Razorpay checkout and webhook, Cal ID webhook, account (`/api/me`), comment admin, cron keep-alive. |
+| `src/lib/server/` | Database, rate limiting + Turnstile, storage links, Brevo, Razorpay, auth. Server-only. |
+| `src/components/` | Shared card, block renderer, filters, share bar, comments, layout chrome. |
+| `scripts/schema.sql` | Database schema. |
 
-Inline content markup: `_words_` → Instrument Serif Italic, `==words==` → serif + mint highlighter, `**bold**`, `[link](url)`.
+## Rules the code follows
 
-## Motion and accessibility
-
-- All motion runs through `gsap.matchMedia()`. Reduced-motion visitors get a complete static layout; mobile gets lighter, unpinned versions of the scroll stories.
-- Skip link, visible focus rings, Esc closes menus/dialogs, Ctrl/⌘+K search, labelled fields, errors in words, 44px tap targets.
-
-## Not wired yet (open decisions in the brief)
-
-- **CMS / admin**: content is typed files in `src/content/`, ready to move to a headless CMS.
-- **Email provider**: `src/app/api/newsletter/route.ts` validates and returns OK.
-- **Comments storage + moderation**: `src/app/api/comments/route.ts`.
-- **Payments**: `TemplateAction.tsx`, `BookingWidget.tsx` (paid sessions).
-- **Booking tool**: `BookingWidget.tsx` uses placeholder slots.
-- **Template files**: file URLs are empty in `src/content/templates.ts`.
-- Add rate limiting / bot protection to the public API routes before launch.
-- Legal pages are drafts and need a lawyer's review.
+- Motion: only the navbar capsule change (280ms), colour hovers (160ms) and fades (240ms). Reduced motion is respected.
+- Every comment waits for approval at `/admin` (emails listed in `ADMIN_EMAILS`).
+- Forms: Turnstile + 5 submissions per form per hour per IP hash and per browser ID. IPs are stored only as salted hashes.
+- Tables live in the `mb` schema, which the public Supabase API can't reach. Only server routes touch the database.
+- Dates are always DD/MM/YY.
+- Icons come only from licensed sets in the asset pack (tabler, ionicons MIT; dashboard-icons Apache 2.0; simple-icons CC0). `canva.svg` is from the unlicensed tech-stack set: replace it before launch.

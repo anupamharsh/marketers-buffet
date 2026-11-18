@@ -2,105 +2,79 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
 import { nav, site } from "@/content/site";
-import { useLenis } from "@/components/motion/SmoothScroll";
-import { Logo } from "@/components/brand/Logo";
-import { IconArrow, IconClose } from "@/components/ui/Icons";
+import { Logo } from "@/components/brand/Cloche";
+import { Icon } from "@/components/ui/Icon";
 import { ThemeToggle } from "./ThemeToggle";
 
-export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const lenis = useLenis();
+export function MobileMenu({ open, onClose, signedIn }: { open: boolean; onClose: () => void; signedIn: boolean }) {
+  const first = useRef<HTMLAnchorElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onClose = () => closeRef.current();
-    if (open) {
-      lenis?.stop();
-      document.body.style.overflow = "hidden";
-      gsap.set(el, { display: "flex" });
-      const tl = gsap.timeline();
-      tl.fromTo(el, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "expo.inOut" });
-      tl.fromTo(el.querySelectorAll("[data-m]"), { yPercent: 110 }, { yPercent: 0, duration: 0.9, stagger: 0.05, ease: "expo.out" }, "-=0.3");
-      tl.fromTo(el.querySelectorAll("[data-m-fade]"), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.6");
-      el.querySelector<HTMLElement>("[data-m-first]")?.focus();
-      const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-      window.addEventListener("keydown", onKey);
-      return () => window.removeEventListener("keydown", onKey);
-    } else if (el.style.display === "flex") {
-      lenis?.start();
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    first.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeRef.current();
+    window.addEventListener("keydown", onKey);
+    return () => {
       document.body.style.overflow = "";
-      gsap.to(el, {
-        clipPath: "inset(0 0 100% 0)",
-        duration: 0.55,
-        ease: "expo.inOut",
-        onComplete: () => {
-          gsap.set(el, { display: "none" });
-        },
-      });
-    }
-  }, [open, lenis]);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
     <div
-      ref={ref}
       id="mobile-menu"
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      aria-hidden={!open}
-      className="fixed inset-0 z-[110] hidden flex-col bg-paper lg:hidden"
-      style={{ display: "none" }}
+      hidden={!open}
+      className="on-dark grain fixed inset-0 z-[120] flex flex-col bg-indigo text-offwhite lg:hidden"
     >
-      <div className="tex-dots pointer-events-none absolute inset-0" />
-      <span className="glow glow-mint" style={{ width: "120vw", left: "-50vw", bottom: "-60vw" }} />
-      <div className="shell relative flex h-[72px] items-center justify-between">
-        <Link href="/" onClick={onClose} className="text-[1.2rem]" aria-label="Marketers Buffet, home" tabIndex={open ? 0 : -1}>
-          <Logo />
+      <div className="shell flex h-[68px] items-center justify-between">
+        <Link href="/" onClick={onClose} className="text-[1.05rem]" aria-label="Marketers Buffet, home">
+          <Logo highlight="#1A0B4B" />
         </Link>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1.5">
           <ThemeToggle />
-          <button onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full hover:bg-ink/5" aria-label="Close menu" tabIndex={open ? 0 : -1}>
-            <IconClose size={22} />
+          <button onClick={onClose} className="icon-btn" aria-label="Close menu">
+            <Icon name="x" size={18} />
           </button>
         </span>
       </div>
-      <nav aria-label="Mobile" className="shell relative flex flex-1 flex-col justify-center">
+      <nav aria-label="Mobile" className="shell flex flex-1 flex-col justify-center">
         <ul className="grid gap-1">
-          {[...nav, { href: "/book-a-call", label: "Book a call" }].map((n, i) => (
-            <li key={n.href} className="overflow-hidden">
+          {nav.map((n, i) => (
+            <li key={n.href}>
               <Link
+                ref={i === 0 ? first : undefined}
                 href={n.href}
                 onClick={onClose}
-                data-m
-                {...(i === 0 ? { "data-m-first": "" } : {})}
-                tabIndex={open ? 0 : -1}
-                className="group flex items-center justify-between py-1.5 text-[clamp(2.4rem,11vw,3.6rem)] font-bold leading-[1.05] tracking-[-0.045em] text-ink"
+                className="block py-1.5 text-[clamp(2.2rem,10vw,3.2rem)] font-semibold leading-[1.05] tracking-[-0.04em] transition-colors duration-[160ms] hover:text-lilac"
               >
-                {n.label === "Book a call" ? (
-                  <span>
-                    Book a <span className="serif serif-basil">call</span>
-                  </span>
-                ) : (
-                  n.label
-                )}
-                <IconArrow size={28} className="text-accent opacity-0 transition-opacity group-focus-visible:opacity-100 group-active:opacity-100" />
+                {n.label}
               </Link>
             </li>
           ))}
         </ul>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Link href="/book-a-call" onClick={onClose} className="btn btn-lilac">
+            Book a call
+          </Link>
+          <Link href={signedIn ? "/account" : "/signin"} onClick={onClose} className="btn btn-ghost">
+            <Icon name="user" size={16} /> {signedIn ? "Account" : "Sign in"}
+          </Link>
+        </div>
       </nav>
-      <div className="shell relative flex items-center justify-between gap-4 pb-8 text-sm font-medium text-slate" data-m-fade>
-        <span>Take what you need.</span>
+      <div className="shell flex items-center justify-between pb-8 text-sm text-[#c9c3dd]">
+        <span>{site.tagline}</span>
         <span className="flex gap-4">
-          <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="min-h-11 py-3" tabIndex={open ? 0 : -1}>
+          <a href={site.instagram} target="_blank" rel="noopener noreferrer">
             Instagram
           </a>
-          <a href={site.linkedin} target="_blank" rel="noopener noreferrer" className="min-h-11 py-3" tabIndex={open ? 0 : -1}>
+          <a href={site.linkedin} target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
         </span>

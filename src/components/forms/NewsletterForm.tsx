@@ -1,105 +1,89 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { track, getUtms } from "@/lib/analytics";
-import { IconArrow, IconCheck } from "@/components/ui/Icons";
-
-type Location = "hero" | "footer" | "post" | "newsletter_page" | "home";
+import { Turnstile, type TurnstileHandle } from "@/components/ui/Turnstile";
+import { Icon } from "@/components/ui/Icon";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export function NewsletterForm({
-  location,
-  button = "Send it my way",
-  dark = false,
-  compact = false,
-  smallPrint,
-}: {
-  location: Location;
-  button?: string;
-  dark?: boolean;
-  compact?: boolean;
-  smallPrint?: string | null;
-}) {
+/**
+ * Newsletter signup. "pill" = email field and button in one capsule (homepage
+ * and newsletter page); "compact" = small footer version on inner pages.
+ */
+export function NewsletterForm({ location, variant = "pill", success = "You're in. See you in your inbox soon." }: { location: string; variant?: "pill" | "compact"; success?: string }) {
   const id = useId();
+  const ts = useRef<TurnstileHandle>(null);
   const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
+  const [err, setErr] = useState<string | null>(null);
 
-  async function onSubmit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     if (!EMAIL_RE.test(email.trim())) {
-      setError("That email doesn't look quite right. Check for typos?");
-      setState("error");
+      setErr("That email doesn't look right. Check for typos?");
       return;
     }
     setState("loading");
-    setError(null);
+    setErr(null);
     try {
-      const res = await fetch("/api/newsletter", {
+      const r = await fetch("/api/newsletter", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), location, utm: getUtms() }),
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), location, utm: getUtms(), token: ts.current?.token() }),
       });
-      if (!res.ok) throw new Error();
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.message || "Something broke on our end. Try again in a moment.");
       setState("done");
       track({ event: "newsletter_signup", location });
-    } catch {
-      setState("error");
-      setError("Something broke on our end. Try again in a moment.");
+    } catch (x) {
+      setState("idle");
+      setErr((x as Error).message);
+      ts.current?.reset();
     }
   }
 
   if (state === "done") {
     return (
-      <p role="status" className={`flex items-center gap-3 text-lg font-semibold tracking-[-0.02em] ${dark ? "text-cream" : "text-ink"}`}>
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-basil text-cream">
-          <IconCheck size={18} />
+      <p role="status" className="flex items-center gap-2.5 font-semibold text-ink">
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-lilac text-indigo">
+          <Icon name="check" size={15} />
         </span>
-        You&apos;re in. First issue lands soon.
+        {success}
       </p>
     );
   }
 
+  const pill = variant === "pill";
   return (
-    <form onSubmit={onSubmit} noValidate className={`w-full ${dark ? "on-dark" : ""}`}>
-      <label htmlFor={`${id}-email`} className="sr-only">
+    <form onSubmit={submit} noValidate className="w-full">
+      <label htmlFor={`${id}-e`} className="sr-only">
         Email address
       </label>
-      <div className={`flex w-full gap-2 ${compact ? "flex-row" : "flex-col sm:flex-row"}`}>
+      <div className={pill ? "flex items-center gap-1 rounded-full border border-line bg-white/5 p-1.5 pl-5" : "flex gap-2"}>
         <input
-          id={`${id}-email`}
+          id={`${id}-e`}
           type="email"
           inputMode="email"
           autoComplete="email"
-          required
-          placeholder="Your email"
+          placeholder="you@company.com"
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            if (state === "error") setState("idle");
+            setErr(null);
           }}
-          aria-invalid={state === "error" ? true : undefined}
-          aria-describedby={error ? `${id}-err` : undefined}
-          className="field flex-1 rounded-full px-5"
+          aria-invalid={err ? true : undefined}
+          aria-describedby={err ? `${id}-err` : undefined}
+          className={pill ? "min-h-11 min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-muted" : "field !min-h-11 flex-1 rounded-full"}
         />
-        <button
-          type="submit"
-          disabled={state === "loading"}
-          className={`btn ${dark ? "btn-cream" : "btn-primary"} ${compact ? "aspect-square !px-0 sm:aspect-auto sm:!px-6" : ""}`}
-          aria-label={compact ? button : undefined}
-        >
-          <span className={compact ? "hidden sm:inline" : ""}>{state === "loading" ? "Sending…" : button}</span>
-          <IconArrow size={18} className="btn-arrow" />
+        <button type="submit" disabled={state === "loading"} className={`btn ${pill ? "btn-lilac" : "btn-primary"} shrink-0`}>
+          {state === "loading" ? "Sending…" : "Count me in"}
         </button>
       </div>
-      {error ? (
-        <p id={`${id}-err`} role="alert" className={`mt-2 text-sm font-medium text-danger`}>
-          {error}
-        </p>
-      ) : smallPrint !== null ? (
-        <p className={`mt-3 text-sm ${dark ? "text-muted-cream" : "text-slate"}`}>
-          {smallPrint ?? "Every two weeks. Unsubscribe in one click, no hard feelings."}
+      <Turnstile ref={ts} />
+      {err ? (
+        <p id={`${id}-err`} role="alert" className="mt-2 text-sm font-medium text-danger">
+          {err}
         </p>
       ) : null}
     </form>

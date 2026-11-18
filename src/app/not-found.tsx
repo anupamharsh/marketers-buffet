@@ -1,28 +1,31 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Cloche } from "@/components/brand/Cloche";
-import { Glows } from "@/components/ui/Art";
+import { Cover } from "@/components/ui/Cover";
+
+export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
 
 export default function NotFound() {
   return (
-    <section className="relative isolate grid min-h-[100svh] place-items-center overflow-hidden px-5 pb-20 pt-32">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <Glows glow="both" />
-      </div>
-      <div className="tex-dots pointer-events-none absolute inset-0 -z-10" />
-      <div className="text-center">
-        {/* The lid is lifted and the plate is empty. */}
-        <div className="mx-auto w-40 [&_.mb-lid]:[transform-box:fill-box] [&_.mb-lid]:origin-[90%_100%] [&_.mb-lid]:-translate-y-6 [&_.mb-lid]:-rotate-[18deg]">
-          <Cloche className="h-auto w-full overflow-visible" />
-        </div>
-        <p className="t-num mt-10 text-[clamp(5rem,14vw,10rem)]">404</p>
-        <h1 className="t-h2 mt-2 text-ink">
-          This page <span className="serif serif-basil">wandered off.</span>
+    <div className="shell grid gap-12 pb-24 pt-32 md:pt-40 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+      <div>
+        <p className="t-label mb-5">404</p>
+        <h1 className="t-display text-ink">
+          Page not <span className="tail block">found.</span>
         </h1>
-        <p className="t-lead mt-4">Let&apos;s get you back.</p>
-        <Link href="/" className="btn btn-primary mt-9">
-          Go home
-        </Link>
+        <p className="mt-8 max-w-md text-[1.05rem] leading-relaxed text-muted">That page doesn&apos;t exist, or it moved. Try one of these instead.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/" className="btn btn-primary">
+            Home
+          </Link>
+          <Link href="/blog" className="btn btn-ghost">
+            Blog
+          </Link>
+          <Link href="/templates" className="btn btn-ghost">
+            Templates
+          </Link>
+        </div>
       </div>
-    </section>
+      <Cover cover={{ shape: "linecircle", tone: "indigo" }} className="aspect-square rounded-[28px]" />
+    </div>
   );
 }

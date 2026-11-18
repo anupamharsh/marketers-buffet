@@ -1,40 +1,36 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { site } from "@/content/site";
-import { posts } from "@/content/posts";
-import { templates } from "@/content/templates";
-import { library } from "@/content/library";
-import { formatLabel } from "@/content/types";
-import { plain } from "@/lib/text";
+import { searchIndex } from "@/content";
 import { CONSENT_DEFAULTS_SCRIPT } from "@/lib/consent";
 import { THEME_SCRIPT } from "@/lib/theme";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { Analytics } from "@/components/layout/Analytics";
 import { Toaster } from "@/components/ui/Toaster";
-import type { SearchItem } from "@/components/layout/SearchOverlay";
+import { Fades } from "@/components/ui/Fades";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const instrument = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["italic"],
-  variable: "--font-instrument",
+// General Sans (Fontshare, ITF Free Font License: free for commercial use), self-hosted.
+const generalSans = localFont({
+  src: [
+    { path: "../fonts/GeneralSans-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/GeneralSans-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/GeneralSans-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/GeneralSans-700.woff2", weight: "700", style: "normal" },
+  ],
   display: "swap",
+  variable: "--font-general",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: "Marketers Buffet · A lot of marketing. Take what you need.", template: "%s · Marketers Buffet" },
+  title: { default: "Marketers Buffet · The work behind the work.", template: "%s · Marketers Buffet" },
   description: site.description,
   applicationName: site.name,
-  // Anonymity: the author is always the brand, never a person.
-  authors: [{ name: site.name }],
-  creator: site.name,
-  publisher: site.name,
+  authors: [{ name: site.owner }],
   manifest: "/site.webmanifest",
   icons: {
     icon: [
@@ -43,72 +39,41 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Marketers Buffet" }],
-  },
+  openGraph: { type: "website", siteName: site.name, images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Marketers Buffet" }] },
   twitter: { card: "summary_large_image", images: ["/og-image.png"] },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F8F7F4" },
-    { media: "(prefers-color-scheme: dark)", color: "#1C1C1C" },
+    { media: "(prefers-color-scheme: light)", color: "#1A0B4B" },
+    { media: "(prefers-color-scheme: dark)", color: "#111111" },
   ],
   width: "device-width",
   initialScale: 1,
 };
 
-function buildSearchIndex(): SearchItem[] {
-  return [
-    ...posts.map((p) => ({
-      kind: "Post" as const,
-      title: plain(p.title),
-      sub: `${formatLabel(p.format)} · ${p.hook}`,
-      href: `/blog/${p.slug}`,
-      keywords: [...p.topics, p.format].join(" "),
-    })),
-    ...templates.map((t) => ({
-      kind: "Template" as const,
-      title: t.name,
-      sub: `${t.price ? "Paid" : "Free"} · ${t.line}`,
-      href: `/templates/${t.slug}`,
-      keywords: t.files.map((f) => f.type).join(" "),
-    })),
-    ...library.map((l) => ({
-      kind: "Library" as const,
-      title: l.title,
-      sub: `${l.brand} · ${l.sample}`,
-      href: `/library?item=${l.id}`,
-      keywords: [l.kind, l.industry, ...l.ideas].join(" "),
-    })),
-  ];
-}
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-IN" className={`${inter.variable} ${instrument.variable}`} suppressHydrationWarning>
+    <html lang="en-IN" className={generalSans.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + CONSENT_DEFAULTS_SCRIPT }} />
       </head>
-      {/* Browser extensions (Grammarly, ColorZilla, …) add attributes to <body> before React loads.
-          This only ignores attribute differences on <body> itself, not on anything inside it. */}
-      <body suppressHydrationWarning>
+      {/* Browser extensions add attributes to <body> before React loads; ignore only those. */}
+      <body suppressHydrationWarning className="flex min-h-screen flex-col">
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <SmoothScroll>
-          <Header searchIndex={buildSearchIndex()} />
-          <main id="main" tabIndex={-1} className="outline-none">
+        <AuthProvider>
+          <Header searchIndex={searchIndex()} />
+          <main id="main" tabIndex={-1} className="flex-1 outline-none">
             {children}
           </main>
           <Footer />
           <CookieBanner />
           <Toaster />
           <Analytics />
-        </SmoothScroll>
-        <div className="grain" aria-hidden />
+          <Fades />
+        </AuthProvider>
       </body>
     </html>
   );

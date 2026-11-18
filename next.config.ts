@@ -6,7 +6,19 @@ const nextConfig: NextConfig = {
   // load hot-reload and dev scripts. Has no effect on the production build.
   allowedDevOrigins: ["192.168.*.*", "*.ngrok-free.app"],
   poweredByHeader: false,
-  images: { formats: ["image/avif", "image/webp"] },
+  images: {
+    formats: ["image/avif", "image/webp"],
+    // Public "media" bucket in Supabase Storage (CMS images)
+    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" }],
+  },
+  // Routes from the first version of the site
+  async redirects() {
+    return [
+      { source: "/cookie-policy", destination: "/cookies", permanent: true },
+      { source: "/refund-policy", destination: "/refunds", permanent: true },
+      { source: "/library", destination: "/templates", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

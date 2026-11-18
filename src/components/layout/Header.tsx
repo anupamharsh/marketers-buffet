@@ -2,68 +2,63 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { nav } from "@/content/site";
-import { Logo } from "@/components/brand/Logo";
-import { Magnetic } from "@/components/motion/Magnetic";
-import { IconSearch, IconMenu } from "@/components/ui/Icons";
-import { openSearch, SearchOverlay, type SearchItem } from "./SearchOverlay";
-import { MobileMenu } from "./MobileMenu";
+import type { SearchItem } from "@/content";
+import { Logo } from "@/components/brand/Cloche";
+import { Icon } from "@/components/ui/Icon";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { openSearch, SearchPanel } from "./SearchPanel";
 import { ThemeToggle } from "./ThemeToggle";
+import { MobileMenu } from "./MobileMenu";
 
+/**
+ * Navbar (handoff): full bar at the top of the homepage; after ~120px it
+ * becomes a floating, see-through capsule (280ms ease-out, 18px blur).
+ * Inner pages always show the capsule.
+ */
 export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
-  const pathname = usePathname();
+  const path = usePathname();
+  const home = path === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [mod, setMod] = useState("Ctrl");
-  const last = useRef(0);
-
-  useEffect(() => {
-    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setMod("⌘");
-  }, []);
+  const { session } = useAuth();
 
   useEffect(() => {
     let raf = 0;
-    // Mirror state in refs so React re-renders only when a value really flips,
-    // not on every scroll frame.
-    let isScrolled = false;
-    let isHidden = false;
-    const onScroll = () => {
+    let last = false;
+    const on = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const nextScrolled = y > 24;
-        let nextHidden = isHidden;
-        if (y > 420 && y > last.current + 2) nextHidden = true;
-        else if (y < last.current - 2 || y < 420) nextHidden = false;
-        last.current = y;
-        if (nextScrolled !== isScrolled) setScrolled((isScrolled = nextScrolled));
-        if (nextHidden !== isHidden) setHidden((isHidden = nextHidden));
+        const next = window.scrollY > 120;
+        if (next !== last) setScrolled((last = next));
       });
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    on();
+    window.addEventListener("scroll", on, { passive: true });
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", on);
     };
   }, []);
 
-  useEffect(() => setMenu(false), [pathname]);
+  useEffect(() => setMenu(false), [path]);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const capsule = !home || scrolled;
+  const active = (href: string) => path === href || path.startsWith(href + "/");
 
   return (
     <>
-      <header
-        className={`gpu fixed inset-x-0 top-0 z-[100] transition-[transform,background-color,border-color] duration-500 ease-[var(--ease-out-soft)] ${
-          hidden && !menu ? "-translate-y-full" : "translate-y-0"
-        } ${scrolled && !menu ? "border-b border-line bg-paper/95" : "border-b border-transparent bg-transparent"}`}
-      >
-        <div className="shell flex h-[72px] items-center justify-between gap-3 md:h-[84px] md:gap-6">
-          <Link href="/" aria-label="Marketers Buffet, home" className="relative z-[2] -m-2 rounded-xl p-2 text-[1.2rem] md:text-[1.3rem]">
-            <Logo />
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-[100]">
+        <div
+          className={`on-dark pointer-events-auto mx-auto flex items-center justify-between gap-4 text-offwhite transition-[max-width,margin,padding,border-radius,background-color,box-shadow] duration-[280ms] ease-out ${
+            capsule
+              ? "mt-3 max-w-[1180px] rounded-full bg-indigo/80 px-3 py-2 shadow-[0_12px_32px_-16px_rgba(26,11,75,0.6)] ring-1 ring-white/10 backdrop-blur-[18px] [margin-inline:max(0.75rem,calc((100%-1180px)/2))] sm:px-4"
+              : "mt-0 max-w-[1440px] rounded-none bg-transparent px-[clamp(1.25rem,5vw,4.75rem)] py-5"
+          }`}
+        >
+          <Link href="/" aria-label="Marketers Buffet, home" className="rounded-xl px-2 py-1.5 text-[1.05rem]">
+            <Logo highlight="#1A0B4B" />
           </Link>
 
           <nav aria-label="Main" className="hidden lg:block">
@@ -72,51 +67,41 @@ export function Header({ searchIndex }: { searchIndex: SearchItem[] }) {
                 <li key={n.href}>
                   <Link
                     href={n.href}
-                    aria-current={isActive(n.href) ? "page" : undefined}
-                    className="group relative inline-flex min-h-11 items-center rounded-full px-4 text-[0.95rem] font-medium tracking-[-0.01em] text-ink"
+                    aria-current={active(n.href) ? "page" : undefined}
+                    className="link inline-flex min-h-10 items-center rounded-full px-3.5 text-[0.9rem] font-medium"
                   >
-                    <span className="link-draw" aria-current={isActive(n.href) ? "page" : undefined}>
-                      {n.label}
-                    </span>
+                    {n.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
 
-          <div className="relative z-[2] flex items-center gap-1 sm:gap-2">
-            <button
-              onClick={openSearch}
-              className="group flex h-11 items-center gap-2 rounded-full px-3 text-ink transition-colors hover:bg-ink/5"
-              aria-label="Search (Ctrl or Command + K)"
-            >
-              <IconSearch size={20} />
-              <kbd className="hidden rounded-md border border-line bg-white px-1.5 py-0.5 font-sans text-[0.7rem] font-semibold text-slate xl:inline">
-                {mod} K
-              </kbd>
+          <div className="flex items-center gap-1.5">
+            <button onClick={openSearch} className="icon-btn" aria-label="Search (Ctrl or Command + K)">
+              <Icon name="search" size={17} />
             </button>
-            <ThemeToggle />
-            <span className="hidden sm:inline-flex">
-              <Magnetic>
-                <Link href="/book-a-call" className="btn btn-primary btn-sm">
-                  Book a call
-                </Link>
-              </Magnetic>
-            </span>
+            <ThemeToggle className="hidden lg:grid" />
+            <Link href={session ? "/account" : "/signin"} className="icon-btn hidden lg:grid" aria-label={session ? "Your account" : "Sign in"}>
+              <Icon name="user" size={17} />
+            </Link>
+            <Link href="/book-a-call" className="btn btn-lilac btn-sm hidden lg:inline-flex !min-h-10">
+              Book a call
+            </Link>
             <button
-              onClick={() => setMenu((m) => !m)}
-              className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-ink/5 lg:hidden"
+              onClick={() => setMenu(true)}
+              className="icon-btn lg:hidden"
               aria-expanded={menu}
               aria-controls="mobile-menu"
-              aria-label={menu ? "Close menu" : "Open menu"}
+              aria-label="Open menu"
             >
-              <IconMenu size={22} />
+              <Icon name="menu-2" size={18} />
             </button>
           </div>
         </div>
       </header>
-      <MobileMenu open={menu} onClose={() => setMenu(false)} />
-      <SearchOverlay index={searchIndex} />
+      <MobileMenu open={menu} onClose={() => setMenu(false)} signedIn={Boolean(session)} />
+      <SearchPanel index={searchIndex} />
     </>
   );
 }

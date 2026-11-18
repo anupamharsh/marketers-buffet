@@ -1,27 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
+import { useEffect, useState } from "react";
 import { readConsent, saveConsent } from "@/lib/consent";
 
 export const OPEN_COOKIES = "mb:cookies";
 
-/**
- * Cookie banner: Accept all · Reject · Manage. Never blocks reading:
- * small card, no overlay, remembers the choice.
- */
+/** Accept all · Reject · Manage. Small card, never blocks reading. */
 export function CookieBanner() {
   const [show, setShow] = useState(false);
   const [manage, setManage] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const c = readConsent();
     if (!c) {
-      const t = window.setTimeout(() => setShow(true), 1800);
+      const t = window.setTimeout(() => setShow(true), 1500);
       return () => window.clearTimeout(t);
     }
     setAnalytics(c.analytics);
@@ -40,33 +35,23 @@ export function CookieBanner() {
     return () => window.removeEventListener(OPEN_COOKIES, open);
   }, []);
 
-  useEffect(() => {
-    if (show && ref.current) gsap.fromTo(ref.current, { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6 });
-  }, [show]);
-
   const done = (a: boolean, m: boolean) => {
     saveConsent({ analytics: a, marketing: m });
-    if (ref.current) gsap.to(ref.current, { y: 20, autoAlpha: 0, duration: 0.35, onComplete: () => setShow(false) });
-    else setShow(false);
+    setShow(false);
+    setManage(false);
   };
 
   if (!show) return null;
 
   return (
-    <div
-      ref={ref}
-      role="region"
-      aria-label="Cookie preferences"
-      className="card fixed bottom-3 left-3 right-3 z-[130] max-w-[400px] !rounded-[22px] p-5 shadow-[var(--shadow-lift)] sm:bottom-5 sm:left-5 sm:right-auto"
-    >
-      <p className="font-semibold tracking-[-0.015em] text-ink">A quick one about cookies.</p>
-      <p className="mt-1.5 text-[0.95rem] leading-relaxed text-slate">
-        They help me see which posts are useful. Nothing tracks you unless you say yes.{" "}
-        <Link href="/cookie-policy" className="font-medium text-accent underline underline-offset-2">
+    <div role="region" aria-label="Cookie preferences" className="fixed bottom-3 left-3 right-3 z-[130] max-w-[390px] rounded-[22px] border border-line bg-surface p-5 shadow-2xl sm:bottom-5 sm:left-5 sm:right-auto">
+      <p className="font-semibold text-ink">A quick one about cookies.</p>
+      <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted">
+        They show which pages are useful. Nothing tracks you unless you say yes.{" "}
+        <Link href="/cookies" className="font-medium text-ink underline underline-offset-2">
           Cookie policy
         </Link>
       </p>
-
       {manage ? (
         <fieldset className="mt-4 grid gap-2">
           <legend className="sr-only">Choose cookie types</legend>
@@ -75,7 +60,6 @@ export function CookieBanner() {
           <Toggle label="Marketing" hint="Meta Pixel, to measure campaigns." checked={marketing} onChange={setMarketing} />
         </fieldset>
       ) : null}
-
       <div className="mt-4 flex flex-wrap gap-2">
         {manage ? (
           <button className="btn btn-primary btn-sm flex-1" onClick={() => done(analytics, marketing)}>
@@ -89,7 +73,7 @@ export function CookieBanner() {
             <button className="btn btn-ghost btn-sm flex-1" onClick={() => done(false, false)}>
               Reject
             </button>
-            <button className="btn btn-sm px-3 font-medium text-ink underline underline-offset-4 hover:bg-ink/5" onClick={() => setManage(true)}>
+            <button className="btn btn-sm px-3 text-ink underline underline-offset-4" onClick={() => setManage(true)}>
               Manage
             </button>
           </>
@@ -99,40 +83,16 @@ export function CookieBanner() {
   );
 }
 
-function Toggle({
-  label,
-  hint,
-  checked,
-  disabled,
-  onChange,
-}: {
-  label: string;
-  hint: string;
-  checked: boolean;
-  disabled?: boolean;
-  onChange?: (v: boolean) => void;
-}) {
+function Toggle({ label, hint, checked, disabled, onChange }: { label: string; hint: string; checked: boolean; disabled?: boolean; onChange?: (v: boolean) => void }) {
   return (
-    <label className={`flex min-h-11 items-center justify-between gap-4 rounded-2xl bg-paper px-4 py-2.5 ${disabled ? "opacity-70" : "cursor-pointer"}`}>
+    <label className={`flex min-h-11 items-center justify-between gap-4 rounded-2xl border border-line px-4 py-2.5 ${disabled ? "opacity-70" : "cursor-pointer"}`}>
       <span>
         <span className="block text-sm font-semibold text-ink">{label}</span>
-        <span className="block text-xs text-slate">{hint}</span>
+        <span className="block text-xs text-muted">{hint}</span>
       </span>
-      <input
-        type="checkbox"
-        role="switch"
-        checked={checked}
-        disabled={disabled}
-        onChange={(e) => onChange?.(e.target.checked)}
-        className="peer sr-only"
-      />
-      <span
-        aria-hidden
-        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-basil ${
-          checked ? "bg-basil" : "bg-ink/20"
-        }`}
-      >
-        <span className={`absolute top-1 h-5 w-5 rounded-full bg-cream shadow transition-transform ${checked ? "translate-x-6" : "translate-x-1"}`} />
+      <input type="checkbox" role="switch" checked={checked} disabled={disabled} onChange={(e) => onChange?.(e.target.checked)} className="peer sr-only" />
+      <span aria-hidden className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-[160ms] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 ${checked ? "bg-indigo dark:bg-lilac" : "bg-ink/20"}`}>
+        <span className={`absolute top-1 h-4 w-4 rounded-full bg-white ${checked ? "left-6" : "left-1"}`} />
       </span>
     </label>
   );

@@ -11,8 +11,9 @@ next-env.d.ts
 .env
 .env*.local
 
-# private setup notes (kept local, never pushed)
+# private setup notes and client source files (kept local, never pushed)
 docs/SETUP.md
+client-side/
 
 # netlify local folder
 .netlify/

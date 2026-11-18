@@ -1,32 +1,30 @@
 import type { Metadata } from "next";
-import { LegalPage } from "@/components/legal/LegalPage";
+import Link from "next/link";
+import { site } from "@/content/site";
+import { Legal } from "@/components/legal/Legal";
 
-export const metadata: Metadata = { title: "Terms of Use", alternates: { canonical: "/terms" } };
+export const metadata: Metadata = { title: "Terms of use", alternates: { canonical: "/terms" } };
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms of _Use._" updated="19 Oct 2026" intro="The short version: use what helps you, don't resell it, be decent in the comments.">
-      <h2>Content ownership</h2>
+    <Legal title="Terms of use" updated="19/10/26">
+      <p>By using Marketers Buffet, you agree to these terms. They&apos;re short on purpose.</p>
+      <h2>The content</h2>
+      <p>Posts, automations and AI examples share what worked for one marketer. They are not professional, legal or financial advice. Test before you rely on anything here.</p>
+      <h2>Templates and playbooks</h2>
+      <p>When you download or buy a template, you get a personal licence to use it in your own work and your clients&apos; work. You may not resell, share or publish the files themselves.</p>
+      <h2>Payments</h2>
       <p>
-        Posts, teardowns, templates and designs on this site belong to Marketers Buffet unless stated otherwise. Brands and ads shown in teardowns
-        belong to their owners and are discussed for commentary and education.
+        Prices are in Indian rupees. Payments are handled by Razorpay. Digital downloads are not refundable; see the <Link href="/refunds">refund policy</Link>.
       </p>
-      <h2>Using templates</h2>
-      <ul>
-        <li>You can use templates, free or paid, for your own work and for client work.</li>
-        <li>You can&apos;t resell, redistribute or share them as templates, in original or modified form.</li>
-        <li>Paid templates are licensed to the buyer. Teams need one licence per person.</li>
-      </ul>
       <h2>Comments</h2>
-      <ul>
-        <li>Comments are moderated and may be edited or removed.</li>
-        <li>No spam, self-promotion, hate, harassment or personal information about others.</li>
-        <li>You keep ownership of what you write, and allow us to display it on this site.</li>
-      </ul>
-      <h2>Calls</h2>
-      <p>Calls are for guidance and ideas. They are not legal, financial or other professional advice.</p>
-      <h2>Changes</h2>
-      <p>We may update these terms. The date at the top of this page shows when they last changed.</p>
-    </LegalPage>
+      <p>Comments are checked before they go live. We may edit, hide or remove comments that are spam, abusive or off-topic, and block repeat offenders.</p>
+      <h2>Accounts</h2>
+      <p>Keep access to your email or Google account safe, since that is how you sign in. We may close accounts that misuse the site.</p>
+      <h2>Contact</h2>
+      <p>
+        Questions: <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+    </Legal>
   );
 }

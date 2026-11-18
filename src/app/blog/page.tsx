@@ -1,33 +1,44 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { sortedPosts } from "@/content/posts";
-import { PageHero } from "@/components/ui/PageHero";
-import { BlogIndex } from "@/components/blog/BlogIndex";
-import { PostCard } from "@/components/cards/PostCard";
+import { sortedPosts } from "@/content/blog";
+import { BLOG_TAGS } from "@/content/types";
+import { blocksText } from "@/content";
+import { plain } from "@/lib/text";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { FilterGrid } from "@/components/lists/FilterGrid";
+import { FeaturedPost, PostCard } from "@/components/cards";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Essays, ad teardowns, quick tips and AI workflows. Two minutes or twenty.",
+  description: "Ideas, teardowns and lessons from the week's work.",
   alternates: { canonical: "/blog" },
 };
 
 export default function BlogPage() {
-  const posts = sortedPosts();
+  const all = sortedPosts();
+  const featured = all.find((p) => p.featured) ?? all[0];
   return (
     <>
-      <PageHero title="Read what _you need._" line="Two minutes or twenty. Filter by format and dive in." glow="mint" />
-      {/* Fallback is the full server-rendered list, so posts are in the HTML for SEO and no-JS visitors. */}
-      <Suspense
-        fallback={
-          <div className="shell grid gap-5 pb-28 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {posts.map((p) => (
-              <PostCard key={p.slug} post={p} headingLevel={2} />
-            ))}
-          </div>
-        }
-      >
-        <BlogIndex posts={posts} />
-      </Suspense>
+      <PageIntro label="Blog" lead="Latest" tail="read.">
+        Ideas, teardowns and lessons from the week&apos;s work.
+      </PageIntro>
+      <section className="shell pb-24" aria-label="Posts">
+        <FilterGrid
+          label="Filter posts by tag"
+          param="tag"
+          searchable
+          searchLabel="Search the blog"
+          filters={BLOG_TAGS.map((t) => ({ value: t, label: t }))}
+          featured={featured ? <FeaturedPost p={featured} /> : null}
+          featuredId={featured?.slug}
+          items={all.map((p) => ({
+            id: p.slug,
+            facets: [p.tag],
+            text: `${plain(p.title)} ${p.hook} ${p.tag} ${blocksText(p.body)}`,
+            node: <PostCard p={p} h={2} />,
+          }))}
+          empty="No posts match that yet. Try another tag or search."
+        />
+      </section>
     </>
   );
 }

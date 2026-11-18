@@ -1,29 +1,26 @@
 import { NextResponse } from "next/server";
+import { q } from "@/lib/server/db";
+import { guard, isEmail, readJson, error, clean } from "@/lib/server/security";
+import { addToNewsletter } from "@/lib/server/brevo";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const LOCATIONS = new Set(["hero", "footer", "post", "newsletter_page", "home"]);
-
-/**
- * Newsletter signup.
- * TODO(provider): forward to the chosen email tool (e.g. Buttondown, ConvertKit,
- * Brevo) using a server-side API key from env. Add rate limiting / bot protection
- * (e.g. Turnstile) before launch — this endpoint is public by design.
- */
+/** Newsletter signup: Turnstile + 5/hour limit → our table → Brevo list. */
 export async function POST(req: Request) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
-  }
-  const { email, location } = (body ?? {}) as { email?: unknown; location?: unknown };
-  if (typeof email !== "string" || email.length > 254 || !EMAIL_RE.test(email)) {
-    return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 422 });
-  }
-  if (typeof location !== "string" || !LOCATIONS.has(location)) {
-    return NextResponse.json({ ok: false, error: "invalid_location" }, { status: 422 });
-  }
+  const body = await readJson<{ email?: unknown; location?: unknown; utm?: unknown; token?: unknown }>(req);
+  if (!body) return error(400, "invalid", "Something broke on our end. Try again in a moment.");
+  if (!isEmail(body.email)) return error(422, "invalid_email", "That email doesn't look right. Check for typos?");
 
-  // Provider call goes here. Never log the email address.
+  const blocked = await guard(req, "newsletter", body.token);
+  if (blocked) return blocked;
+
+  const email = body.email.trim().toLowerCase();
+  const source = clean(body.location, 40) || "site";
+  const utm = body.utm && typeof body.utm === "object" ? JSON.stringify(body.utm).slice(0, 600) : null;
+  await q(
+    `insert into mb.subscribers (email, source, utm) values ($1, $2, $3::jsonb)
+     on conflict (email) do update set unsubscribed = false`,
+    [email, source, utm],
+  );
+  const synced = await addToNewsletter(email, { SOURCE: source });
+  if (synced) await q("update mb.subscribers set brevo_synced = true where email = $1", [email]);
   return NextResponse.json({ ok: true });
 }
