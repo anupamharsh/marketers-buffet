@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Dev server only: lets other devices on the local network (and ngrok tunnels)
+  // load hot-reload and dev scripts. Has no effect on the production build.
+  allowedDevOrigins: ["192.168.*.*", "*.ngrok-free.app"],
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },
   async headers() {

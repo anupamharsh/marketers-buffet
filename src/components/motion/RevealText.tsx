@@ -39,7 +39,8 @@ export function RevealText({ as: Tag = "h2", text, className = "", mode = "scrol
             const masks = (self as unknown as { masks?: HTMLElement[] }).masks ?? [];
             gsap.set(masks, { paddingBottom: "0.14em", marginBottom: "-0.14em", paddingInline: "0.08em", marginInline: "-0.08em" });
             gsap.set(el, { autoAlpha: 1 });
-            gsap.set(hls, { "--hl": 0 });
+            // Most headlines have no highlighted words; only touch the highlighter when there is one.
+            if (hls.length) gsap.set(hls, { "--hl": 0 });
             const tl = gsap.timeline({
               delay,
               scrollTrigger: mode === "scroll" ? { trigger: el, start: "top 88%", once: true } : undefined,

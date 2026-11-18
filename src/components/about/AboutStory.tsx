@@ -27,7 +27,7 @@ export function AboutStory() {
       mm.add(MQ.motion, () => {
         const splits = q("[data-para]").map((p) => {
           const hls = p.querySelectorAll("[data-hl]");
-          gsap.set(hls, { "--hl": 0 });
+          if (hls.length) gsap.set(hls, { "--hl": 0 });
           const s = SplitText.create(p, { type: "words", wordsClass: "mb-word" });
           gsap.fromTo(
             s.words,

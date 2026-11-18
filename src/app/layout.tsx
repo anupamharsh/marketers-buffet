@@ -92,7 +92,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + CONSENT_DEFAULTS_SCRIPT }} />
       </head>
-      <body>
+      {/* Browser extensions (Grammarly, ColorZilla, …) add attributes to <body> before React loads.
+          This only ignores attribute differences on <body> itself, not on anything inside it. */}
+      <body suppressHydrationWarning>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
